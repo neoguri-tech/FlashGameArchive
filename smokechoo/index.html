@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>칙칙퍽퍽</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="shell">
+      <section class="topbar" aria-label="게임 상태">
+        <div>
+          <h1>칙칙퍽퍽</h1>
+          <p>흡연충을 개과천선시키고, 연기와 화재를 막으며 지나가는 금연 행사 행렬에 합류시키세요.</p>
+        </div>
+        <div class="stats">
+          <span>점수 <strong id="score">0</strong></span>
+          <span>시간 <strong id="time">60</strong></span>
+          <span>동행 <strong id="followers">0</strong></span>
+          <span>파견 <strong id="sent">0</strong></span>
+          <span>바람 <strong id="wind">→</strong></span>
+        </div>
+      </section>
+
+      <section class="game-wrap">
+        <canvas id="game" width="1024" height="640" aria-label="칙칙퍽퍽 게임 화면"></canvas>
+        <div id="toast" class="toast" aria-live="polite"></div>
+      </section>
+
+      <section class="legend" aria-label="범례">
+        <span><i class="player"></i> 플레이어</span>
+        <span><i class="convert"></i> 개과천선 행렬</span>
+        <span><i class="smoker"></i> 흡연충</span>
+        <span><i class="citizen"></i> 시민</span>
+        <span><i class="smoke"></i> 연기</span>
+        <span><i class="event"></i> 금연 행사 행렬</span>
+      </section>
+    </main>
+
+    <script src="game.js"></script>
+  </body>
+</html>

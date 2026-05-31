@@ -1,0 +1,272 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>러닝 숫자야구 - 로비</title>
+  <link rel="stylesheet" href="src/ui/styles.css" />
+  <script type="importmap">
+    {
+      "imports": {
+        "firebase/app": "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js",
+        "firebase/analytics": "https://www.gstatic.com/firebasejs/10.12.0/firebase-analytics.js",
+        "firebase/auth": "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js",
+        "firebase/firestore": "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js"
+      }
+    }
+  </script>
+  <style>
+    .lobby-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 20px;
+    }
+    .lobby-box {
+      background: rgba(24, 27, 32, 0.92);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      box-shadow: var(--shadow);
+      border-radius: 12px;
+      padding: 48px 36px;
+      width: 100%;
+      max-width: 420px;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+    .lobby-box h1 {
+      margin-bottom: 8px;
+    }
+    .user-info {
+      color: var(--accent-2);
+      font-size: 15px;
+      font-weight: 800;
+      background: rgba(74, 199, 165, 0.1);
+      border-radius: 8px;
+      padding: 12px;
+      border: 1px solid rgba(74, 199, 165, 0.2);
+    }
+    .btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      padding: 14px 24px;
+      border-radius: 8px;
+      font-weight: 900;
+      font-size: 16px;
+      border: none;
+      cursor: pointer;
+      transition: background 0.2s, filter 0.2s, transform 0.1s;
+      width: 100%;
+    }
+    .btn:active {
+      transform: scale(0.98);
+    }
+    .btn-primary {
+      background: var(--accent);
+      color: #17140a;
+    }
+    .btn-primary:hover {
+      filter: brightness(1.1);
+    }
+    .btn-secondary {
+      background: var(--panel-strong);
+      border: 1px solid var(--line);
+      color: var(--text);
+    }
+    .btn-secondary:hover {
+      background: #333a44;
+    }
+    .leaderboard-section {
+      margin-top: 16px;
+      padding-top: 24px;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      text-align: left;
+    }
+    .leaderboard-section h3 {
+      font-size: 16px;
+      margin-bottom: 16px;
+      color: var(--accent-2);
+      text-align: center;
+    }
+    .leaderboard-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      max-height: 200px;
+      overflow-y: auto;
+    }
+    .leaderboard-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: rgba(0, 0, 0, 0.2);
+      padding: 10px 14px;
+      border-radius: 6px;
+      font-size: 14px;
+    }
+    .leaderboard-rank {
+      font-weight: 800;
+      color: var(--accent);
+      width: 24px;
+    }
+    .leaderboard-name {
+      flex: 1;
+      margin-left: 8px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .leaderboard-time {
+      font-family: monospace;
+      font-weight: bold;
+      color: var(--text);
+    }
+    .leaderboard-list::-webkit-scrollbar {
+      width: 6px;
+    }
+    .leaderboard-list::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 3px;
+    }
+  </style>
+</head>
+<body>
+  <div class="lobby-container">
+    <div class="lobby-box">
+      <div>
+        <p class="kicker">Running Baseball</p>
+        <h1>게임 로비</h1>
+      </div>
+      
+      <div class="user-info" id="userInfo">접속 정보를 불러오는 중...</div>
+      
+      <div class="best-time-info" id="bestTimeInfo" style="display: none; background: rgba(107, 168, 255, 0.1); border: 1px solid rgba(107, 168, 255, 0.2); border-radius: 8px; padding: 12px; color: var(--accent); font-weight: 800; font-size: 15px;">
+        최단 클리어 시간: <span id="bestTimeValue">00:00.0</span>
+      </div>
+      
+      <div style="display: flex; flex-direction: column; gap: 12px; margin-top: 8px;">
+        <button id="newGameBtn" class="btn btn-primary" type="button">새 게임 시작</button>
+        <button id="logoutBtn" class="btn btn-secondary" type="button">로그아웃</button>
+      </div>
+
+      <div class="leaderboard-section">
+        <h3>명예의 전당</h3>
+        <div id="leaderboardList" class="leaderboard-list">
+          <div class="leaderboard-item" style="justify-content: center; color: var(--text-muted);">로딩 중...</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script type="module">
+    import FirebaseApi from './src/firebase/firebaseApi.js';
+    
+    const userInfoEl = document.getElementById('userInfo');
+    const newGameBtn = document.getElementById('newGameBtn');
+    const logoutBtn = document.getElementById('logoutBtn');
+
+    // 인증 상태 확인
+    FirebaseApi.onAuthStateChanged(async (user) => {
+      if (!user) {
+        // 로그인 상태가 아예 없으면 자동 게스트 로그인 시도
+        try {
+          await FirebaseApi.signInAsGuest();
+        } catch (error) {
+          userInfoEl.textContent = '게스트 로그인 실패. 파이어베이스 콘솔에서 익명 로그인을 활성화했는지 확인해주세요.';
+          userInfoEl.style.color = 'var(--danger)';
+          userInfoEl.style.background = 'rgba(255, 111, 97, 0.1)';
+          userInfoEl.style.border = '1px solid rgba(255, 111, 97, 0.2)';
+        }
+      } else {
+        try {
+          const userData = await FirebaseApi.getUserData();
+          if (userData && userData.bestClearTime) {
+            const ms = userData.bestClearTime;
+            const mins = Math.floor(ms / 60000).toString().padStart(2, '0');
+            const secs = Math.floor((ms % 60000) / 1000).toString().padStart(2, '0');
+            const tenths = Math.floor((ms % 1000) / 100);
+            
+            document.getElementById('bestTimeValue').textContent = `${mins}:${secs}.${tenths}`;
+            document.getElementById('bestTimeInfo').style.display = 'block';
+          }
+        } catch (error) {
+          console.error("데이터 로드 실패:", error);
+        }
+
+        if (user.isAnonymous) {
+          userInfoEl.textContent = '게스트 모드로 접속 중입니다.';
+          logoutBtn.textContent = '구글 로그인 연동 (기록 저장)';
+          logoutBtn.classList.remove('btn-secondary');
+          logoutBtn.classList.add('btn-primary');
+          
+          logoutBtn.onclick = () => {
+            window.location.href = 'login.html';
+          };
+        } else {
+          userInfoEl.textContent = `환영합니다, ${user.displayName || user.email || '플레이어'}님!`;
+          logoutBtn.textContent = '로그아웃';
+          logoutBtn.classList.remove('btn-primary');
+          logoutBtn.classList.add('btn-secondary');
+          
+          logoutBtn.onclick = async () => {
+            try {
+              await FirebaseApi.signOut();
+            } catch (error) {
+              console.error('로그아웃 에러:', error);
+              alert('로그아웃에 실패했습니다.');
+            }
+          };
+        }
+      }
+    });
+
+    // 새 게임 시작
+    newGameBtn.addEventListener('click', () => {
+      window.location.href = 'index.html';
+    });
+
+    // 리더보드 렌더링
+    async function loadLeaderboard() {
+      const listEl = document.getElementById('leaderboardList');
+      try {
+        const lbData = await FirebaseApi.getLeaderboard(5);
+        listEl.innerHTML = '';
+        
+        if (lbData.length === 0) {
+          listEl.innerHTML = '<div class="leaderboard-item" style="justify-content: center; color: var(--text-muted);">기록이 없습니다.</div>';
+          return;
+        }
+
+        lbData.forEach((item, index) => {
+          const ms = item.bestClearTime;
+          const mins = Math.floor(ms / 60000).toString().padStart(2, '0');
+          const secs = Math.floor((ms % 60000) / 1000).toString().padStart(2, '0');
+          const tenths = Math.floor((ms % 1000) / 100);
+          const timeString = `${mins}:${secs}.${tenths}`;
+          
+          const name = item.displayName || '익명 유저';
+
+          const div = document.createElement('div');
+          div.className = 'leaderboard-item';
+          div.innerHTML = `
+            <span class="leaderboard-rank">${index + 1}</span>
+            <span class="leaderboard-name">${name}</span>
+            <span class="leaderboard-time">${timeString}</span>
+          `;
+          listEl.appendChild(div);
+        });
+      } catch (error) {
+        listEl.innerHTML = '<div class="leaderboard-item" style="justify-content: center; color: var(--danger);">리더보드를 불러올 수 없습니다.</div>';
+      }
+    }
+    
+    // 리더보드 로드
+    loadLeaderboard();
+  </script>
+</body>
+</html>

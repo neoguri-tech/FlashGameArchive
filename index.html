@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>네오구리 플래시 게임 아카이브</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <a class="brand" href="index.html" aria-label="홈으로 이동">
+        <span class="brand-mark" aria-hidden="true">N</span>
+        <span>
+          <strong>네오구리</strong>
+          <small>Flash Game Archive</small>
+        </span>
+      </a>
+      <nav aria-label="게임 바로가기">
+        <a href="number_palace/index.html">러닝 숫자야구</a>
+        <a href="smokechoo/index.html">칙칙퍽퍽</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="hero" aria-labelledby="pageTitle">
+        <div class="hero-copy">
+          <p class="eyebrow">Playable archive</p>
+          <h1 id="pageTitle">플래시 감성으로 다시 꺼내는 미니 게임 모음</h1>
+          <p>
+            각 폴더에 구현된 게임을 한 곳에서 바로 실행할 수 있습니다. 원하는 게임을 고르고
+            브라우저에서 바로 플레이하세요.
+          </p>
+        </div>
+        <div class="hero-board" aria-hidden="true">
+          <span class="tile tile-yellow">7</span>
+          <span class="tile tile-green">S</span>
+          <span class="tile tile-red">!</span>
+          <span class="track-line"></span>
+          <span class="player-dot"></span>
+        </div>
+      </section>
+
+      <section class="games-section" aria-labelledby="gamesTitle">
+        <div class="section-heading">
+          <p class="eyebrow">Games</p>
+          <h2 id="gamesTitle">구현된 게임</h2>
+        </div>
+
+        <div class="game-grid">
+          <article class="game-card">
+            <a class="card-link" href="number_palace/index.html" aria-label="러닝 숫자야구 플레이하기"></a>
+            <div class="game-media image-media portrait-media">
+              <img
+                src="assets/home/number-palace-screenshot.png"
+                alt="러닝 숫자야구 실제 게임 화면"
+              />
+            </div>
+            <div class="game-content">
+              <div>
+                <p class="game-kicker">Number Palace</p>
+                <h3>러닝 숫자야구</h3>
+                <p>
+                  레인을 달리며 숫자를 모으고, 비밀 조합을 맞히는 러닝 숫자야구 게임입니다.
+                </p>
+              </div>
+              <a class="play-button" href="number_palace/index.html">
+                플레이
+                <span aria-hidden="true">→</span>
+              </a>
+            </div>
+          </article>
+
+          <article class="game-card">
+            <a class="card-link" href="smokechoo/index.html" aria-label="칙칙퍽퍽 플레이하기"></a>
+            <div class="game-media image-media">
+              <img
+                src="assets/home/smokechoo-screenshot.png"
+                alt="칙칙퍽퍽 실제 게임 화면"
+              />
+            </div>
+            <div class="game-content">
+              <div>
+                <p class="game-kicker">Smokechoo</p>
+                <h3>칙칙퍽퍽</h3>
+                <p>
+                  흡연충을 개과천선시키고 연기와 화재를 막아 금연 행사 행렬에 합류시키세요.
+                </p>
+              </div>
+              <a class="play-button" href="smokechoo/index.html">
+                플레이
+                <span aria-hidden="true">→</span>
+              </a>
+            </div>
+          </article>
+        </div>
+      </section>
+    </main>
+  </body>
+</html>
