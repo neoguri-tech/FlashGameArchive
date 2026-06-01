@@ -18,6 +18,10 @@ const saveHelpTextEl = document.querySelector("#saveHelpText");
 const resultOverlayEl = document.querySelector("#resultOverlay");
 const resultTitleEl = document.querySelector("#resultTitle");
 const resultScoreEl = document.querySelector("#resultScore");
+const onlinePanelEl = document.querySelector("#onlinePanel");
+const roomCodeValueEl = document.querySelector("#roomCodeValue");
+const roomStatusValueEl = document.querySelector("#roomStatusValue");
+const copyRoomButtonEl = document.querySelector("#copyRoomButton");
 
 const GAME_ID = "reversi";
 const LEADERBOARD_ID = "cpu_best_win";
@@ -38,6 +42,7 @@ const PLAYERS = {
 const MODE_LABELS = {
   cpu: "VS 컴퓨터",
   local: "로컬 2인",
+  online: "온라인",
 };
 
 const DIFFICULTY_LABELS = {
@@ -101,6 +106,8 @@ const DIFFICULTY_SCORE_BASE = {
   minimax4: 3000,
 };
 
+const ROOM_ID_PATTERN = /^[0-9A-Z]{6}$/;
+
 let state;
 let gameSettings = readSettingsFromUrl();
 let backendState = {
@@ -114,6 +121,14 @@ function clamp(value, min, max) {
   return Math.max(min, Math.min(max, value));
 }
 
+function normalizeRoomId(value) {
+  const normalized = String(value ?? "")
+    .trim()
+    .replace(/\s+/g, "")
+    .toUpperCase();
+  return ROOM_ID_PATTERN.test(normalized) ? normalized : "";
+}
+
 function readSettingsFromUrl() {
   const params = new URLSearchParams(window.location.search);
   const modeParam = params.get("mode");
@@ -125,12 +140,15 @@ function readSettingsFromUrl() {
   };
   const requestedDifficulty = difficultyAliases[difficultyParam] ?? difficultyParam;
   const blockedParam = Number.parseInt(params.get("blocked") ?? "0", 10);
+  const requestedMode = modeParam === "local" || modeParam === "online" ? modeParam : "cpu";
 
   return {
-    mode: modeParam === "local" ? "local" : "cpu",
+    mode: requestedMode,
     humanColor: playerParam === "white" ? "white" : "black",
     difficulty: DIFFICULTY_LABELS[requestedDifficulty] ? requestedDifficulty : "easy",
     blockedCount: clamp(Number.isFinite(blockedParam) ? blockedParam : 0, 0, 14),
+    roomId: normalizeRoomId(params.get("room")),
+    createRoom: params.get("create") === "1",
   };
 }
 
@@ -139,11 +157,12 @@ function cloneRuleset(baseRules, settings) {
     settings.mode === "cpu" && settings.humanColor === "white" ? "computer" : "human";
   const whiteController =
     settings.mode === "cpu" && settings.humanColor === "black" ? "computer" : "human";
+  const randomBlockedCount = settings.mode === "online" && settings.roomId ? 0 : settings.blockedCount;
 
   return {
     ...baseRules,
-    label: settings.blockedCount > 0 ? `변형 8x8` : baseRules.label,
-    randomBlockedCount: settings.blockedCount,
+    label: randomBlockedCount > 0 ? `변형 8x8` : baseRules.label,
+    randomBlockedCount,
     blockedCells: [...baseRules.blockedCells],
     players: {
       black: {
@@ -190,17 +209,35 @@ function createGame(settings = gameSettings) {
       label: "로그인 확인 중",
       detail: "Google 로그인 시 VS 컴퓨터 결과가 저장됩니다.",
     },
+    online: {
+      roomId: settings.roomId,
+      shouldCreateRoom: settings.createRoom,
+      seat: null,
+      status: "offline",
+      revision: 0,
+      unsubscribe: null,
+      inviteUrl: "",
+      applyingRemote: false,
+      initializing: false,
+    },
   };
 
   syncSaveStateWithAuth();
   state.legalMoves = getLegalMoves(state.board, state.current);
   render();
+  if (state.mode === "online") {
+    initializeOnlineRoom();
+  }
 }
 
 function clearPendingAi() {
   if (state?.aiTimer) {
     window.clearTimeout(state.aiTimer);
     state.aiTimer = null;
+  }
+  if (state?.online?.unsubscribe) {
+    state.online.unsubscribe();
+    state.online.unsubscribe = null;
   }
 }
 
@@ -362,10 +399,18 @@ function getFlipsForMove(board, row, col, playerId) {
 }
 
 function isHumanTurn() {
+  if (state.mode === "online") {
+    return (
+      !state.gameOver &&
+      state.online.status === "playing" &&
+      state.online.seat === state.current
+    );
+  }
   return state.rules.players[state.current].controller === "human" && !state.gameOver;
 }
 
 function isComputerTurn() {
+  if (state.mode === "online") return false;
   return state.rules.players[state.current].controller === "computer" && !state.gameOver;
 }
 
@@ -374,7 +419,7 @@ function applyMove(row, col) {
   return commitMove(row, col);
 }
 
-function commitMove(row, col) {
+function commitMove(row, col, options = {}) {
   const move = state.legalMoves.find((candidate) => candidate.row === row && candidate.col === col);
 
   if (!move) return false;
@@ -406,6 +451,9 @@ function commitMove(row, col) {
   advanceTurn();
   render();
   queueResultSave();
+  if (state.mode === "online" && options.syncOnline !== false) {
+    writeOnlineState();
+  }
   return true;
 }
 
@@ -840,23 +888,56 @@ function randomMove(moves) {
   return moves[Math.floor(Math.random() * moves.length)];
 }
 
+function waitForInitialAuth(authApi, timeoutMs = 2500) {
+  return new Promise((resolve) => {
+    let settled = false;
+    const finish = (user) => {
+      if (settled) return;
+      settled = true;
+      window.clearTimeout(timer);
+      resolve(user);
+    };
+    const timer = window.setTimeout(() => finish(authApi.getCurrentUser()), timeoutMs);
+    authApi.waitForAuthState().then(finish).catch(() => finish(authApi.getCurrentUser()));
+  });
+}
+
+function withTimeout(promise, timeoutMs, message) {
+  let timerId;
+  const timeoutPromise = new Promise((_, reject) => {
+    timerId = window.setTimeout(() => {
+      const error = new Error(message);
+      error.code = "timeout";
+      reject(error);
+    }, timeoutMs);
+  });
+
+  return Promise.race([promise, timeoutPromise]).finally(() => {
+    window.clearTimeout(timerId);
+  });
+}
+
 function setupBackend() {
   return Promise.all([
     import("../../shared/backend/authApi.js"),
     import("../../shared/backend/userApi.js"),
     import("../../shared/backend/leaderboardApi.js"),
     import("../../shared/backend/eventsApi.js"),
+    import("../../shared/backend/roomApi.js"),
   ])
-    .then(([authApi, userApi, leaderboardApi, eventsApi]) => {
+    .then(async ([authApi, userApi, leaderboardApi, eventsApi, roomApi]) => {
+      const initialUser = await waitForInitialAuth(authApi);
+
       backendState = {
         ready: true,
         loadFailed: false,
-        user: authApi.getCurrentUser(),
+        user: initialUser,
         api: {
           ...authApi,
           ...userApi,
           ...leaderboardApi,
           ...eventsApi,
+          ...roomApi,
         },
       };
 
@@ -864,6 +945,18 @@ function setupBackend() {
         backendState.user = user;
         syncSaveStateWithAuth();
         renderSaveState();
+
+        if (state?.mode !== "online") return;
+
+        if (user && !user.isAnonymous) {
+          if (["login-required", "offline"].includes(state.online.status)) {
+            initializeOnlineRoom();
+          }
+          return;
+        }
+
+        setOnlineStatus("login-required", "온라인 대전은 Google 로그인이 필요합니다. 로비에서 로그인해 주세요.");
+        render();
       });
 
       syncSaveStateWithAuth();
@@ -892,6 +985,11 @@ function canSaveResult() {
 
 function syncSaveStateWithAuth() {
   if (!state) return;
+
+  if (state.mode === "online") {
+    setSaveState("저장 안 함", "온라인 대전 결과는 아직 전적/리더보드에 저장하지 않습니다.", false);
+    return;
+  }
 
   if (state.mode !== "cpu") {
     setSaveState("저장 안 함", "로컬 2인은 한 계정으로 두 명이 플레이할 수 있어 결과 저장에서 제외됩니다.", false);
@@ -942,6 +1040,11 @@ function queueResultSave() {
 async function persistResult() {
   const summary = state.resultSummary;
   if (!summary) return;
+
+  if (summary.mode === "online") {
+    setSaveState("저장 안 함", "온라인 대전 결과는 아직 전적/리더보드에 저장하지 않습니다.");
+    return;
+  }
 
   if (summary.mode !== "cpu") {
     setSaveState("저장 안 함", "로컬 2인은 한 계정으로 두 명이 플레이할 수 있어 결과 저장에서 제외됩니다.");
@@ -1050,6 +1153,384 @@ function resultPayload(summary) {
   };
 }
 
+function makeOnlineRoomId() {
+  const alphabet = "23456789ABCDEFGHJKLMNPQRSTUVWXYZ";
+  let id = "";
+  for (let index = 0; index < 6; index += 1) {
+    id += alphabet[Math.floor(Math.random() * alphabet.length)];
+  }
+  return id;
+}
+
+async function makeUniqueOnlineRoomId() {
+  for (let attempt = 0; attempt < 8; attempt += 1) {
+    const roomId = makeOnlineRoomId();
+    const existingRoom = await backendState.api.getRoom(GAME_ID, roomId);
+    if (!existingRoom) return roomId;
+  }
+  throw new Error("방 코드를 만들 수 없습니다.");
+}
+
+async function initializeOnlineRoom() {
+  if (state.online.initializing) return;
+  state.online.initializing = true;
+  setOnlineStatus("connecting", "온라인 방을 준비하고 있습니다.");
+  render();
+  await backendReadyPromise;
+
+  try {
+    if (!backendState.ready || !backendState.api) {
+      setOnlineStatus("offline", "온라인 모듈을 불러오지 못했습니다.");
+      render();
+      return;
+    }
+
+    const user = backendState.user;
+    if (!user || user.isAnonymous) {
+      setOnlineStatus("login-required", "온라인 대전은 Google 로그인이 필요합니다. 로비에서 로그인해 주세요.");
+      render();
+      return;
+    }
+
+    if (state.online.shouldCreateRoom) {
+      await withTimeout(createOnlineRoom(user), 10000, "온라인 방 생성 시간이 초과되었습니다.");
+    } else if (state.online.roomId) {
+      await withTimeout(joinOnlineRoom(user, state.online.roomId), 10000, "온라인 방 참가 시간이 초과되었습니다.");
+    } else {
+      setOnlineStatus("missing-room", "방 코드가 없습니다. 로비에서 새 온라인 방을 만들거나 초대 코드로 참가해 주세요.");
+      render();
+    }
+  } catch (error) {
+    console.warn("[Reversi] 온라인 방 초기화 실패:", error);
+    setOnlineStatus("error", onlineErrorMessage(error));
+    render();
+  } finally {
+    state.online.initializing = false;
+  }
+}
+
+async function createOnlineRoom(user) {
+  const roomId = await makeUniqueOnlineRoomId();
+  const seat = state.humanColor;
+  state.online.roomId = roomId;
+  state.online.seat = seat;
+  state.online.revision = 1;
+  state.online.inviteUrl = buildInviteUrl(roomId);
+  const publicName = await backendState.api.getUserPublicName(user);
+
+  await backendState.api.createRoom({
+    gameId: GAME_ID,
+    roomId,
+    data: {
+      status: "waiting",
+      settings: {
+        blockedCount: countScore(state.board).blocked,
+        hostColor: seat,
+        rulesVersion: 1,
+      },
+      seats: {
+        [seat]: makeSeatData(user, publicName, seat),
+      },
+      state: serializeOnlineState(1),
+    },
+  });
+
+  state.online.shouldCreateRoom = false;
+  replaceRoomUrl(roomId);
+  await backendState.api.setPresence({
+    gameId: GAME_ID,
+    roomId,
+    uid: user.uid,
+    data: { seat, publicName },
+  });
+  startOnlineRoomListener(roomId);
+  setOnlineStatus("waiting", "상대를 기다리는 중입니다. 초대 링크를 공유하세요.");
+  render();
+}
+
+async function joinOnlineRoom(user, roomId) {
+  const room = await backendState.api.getRoom(GAME_ID, roomId);
+  if (!room) {
+    setOnlineStatus("not-found", "방을 찾을 수 없습니다. 초대 코드를 다시 확인해 주세요.");
+    render();
+    return;
+  }
+
+  const existingSeat = findSeatForUid(room, user.uid);
+  const seat = existingSeat ?? pickOpenSeat(room);
+  if (!seat) {
+    state.online.roomId = roomId;
+    state.online.seat = null;
+    state.online.inviteUrl = buildInviteUrl(roomId);
+    startOnlineRoomListener(roomId);
+    setOnlineStatus("spectating", "방이 가득 차서 관전 모드로 들어왔습니다.");
+    render();
+    return;
+  }
+
+  state.online.roomId = roomId;
+  state.online.seat = seat;
+  state.online.inviteUrl = buildInviteUrl(roomId);
+  const publicName = await backendState.api.getUserPublicName(user);
+
+  const patch = {};
+  if (!existingSeat) {
+    patch[`seats/${seat}`] = makeSeatData(user, publicName, seat);
+  }
+  patch.status = hasTwoSeats({ ...room, seats: { ...(room.seats ?? {}), [seat]: { uid: user.uid } } })
+    ? "playing"
+    : "waiting";
+
+  await backendState.api.updateRoom(GAME_ID, roomId, patch);
+  await backendState.api.setPresence({
+    gameId: GAME_ID,
+    roomId,
+    uid: user.uid,
+    data: { seat, publicName },
+  });
+  startOnlineRoomListener(roomId);
+}
+
+function makeSeatData(user, publicName, seat) {
+  return {
+    uid: user.uid,
+    publicName,
+    seat,
+    joinedAtMs: Date.now(),
+  };
+}
+
+function findSeatForUid(room, uid) {
+  if (room?.seats?.black?.uid === uid) return "black";
+  if (room?.seats?.white?.uid === uid) return "white";
+  return null;
+}
+
+function pickOpenSeat(room) {
+  if (!room?.seats?.black?.uid) return "black";
+  if (!room?.seats?.white?.uid) return "white";
+  return null;
+}
+
+function hasTwoSeats(room) {
+  return Boolean(room?.seats?.black?.uid && room?.seats?.white?.uid);
+}
+
+function startOnlineRoomListener(roomId) {
+  if (state.online.unsubscribe) {
+    state.online.unsubscribe();
+  }
+  state.online.unsubscribe = backendState.api.listenRoom(GAME_ID, roomId, (room, error) => {
+    if (error) {
+      setOnlineStatus("error", onlineErrorMessage(error));
+      render();
+      return;
+    }
+    applyOnlineRoom(room, roomId);
+  });
+}
+
+function applyOnlineRoom(room, roomId) {
+  if (state.mode !== "online") return;
+
+  if (!room) {
+    setOnlineStatus("not-found", "방이 삭제되었거나 찾을 수 없습니다.");
+    render();
+    return;
+  }
+
+  state.online.applyingRemote = true;
+  const user = backendState.user;
+  const seat = user ? findSeatForUid(room, user.uid) : null;
+  if (seat) {
+    state.online.seat = seat;
+    state.humanColor = seat;
+  }
+
+  state.online.status = room.status ?? "waiting";
+  state.online.roomId = state.online.roomId || normalizeRoomId(roomId);
+  state.online.inviteUrl = buildInviteUrl(state.online.roomId);
+
+  if (room.state?.board) {
+    hydrateOnlineState(room);
+  }
+
+  state.message = buildOnlineMessage(room);
+  state.legalMoves = getLegalMoves(state.board, state.current);
+  state.online.applyingRemote = false;
+  render();
+}
+
+function hydrateOnlineState(room) {
+  const onlineState = room.state;
+  state.board = deserializeBoard(onlineState.board);
+  state.rules.randomBlockedCount = countScore(state.board).blocked;
+  state.rules.label = state.rules.randomBlockedCount > 0 ? "변형 8x8" : CLASSIC_RULESET.label;
+  state.current = onlineState.current ?? "black";
+  state.moveHistory = Array.isArray(onlineState.moveHistory) ? onlineState.moveHistory : [];
+  state.lastMove = onlineState.lastMove ?? null;
+  state.gameOver = Boolean(onlineState.gameOver);
+  state.resultSummary = onlineState.resultSummary ?? (state.gameOver ? buildResultSummary() : null);
+  state.online.revision = onlineState.revision ?? state.online.revision;
+}
+
+function buildOnlineMessage(room) {
+  if (state.online.status === "waiting") {
+    return "상대를 기다리는 중입니다. 초대 링크를 공유하세요.";
+  }
+  if (state.online.status === "login-required") {
+    return "온라인 대전은 Google 로그인이 필요합니다.";
+  }
+  if (!state.online.seat) {
+    return "관전 중입니다.";
+  }
+  if (state.gameOver) {
+    return buildGameOverMessage();
+  }
+
+  const currentSeat = room?.seats?.[state.current];
+  const currentName = currentSeat?.publicName ? ` · ${currentSeat.publicName}` : "";
+  return state.current === state.online.seat
+    ? "내 차례입니다."
+    : `${PLAYERS[state.current].label}${currentName} 차례입니다.`;
+}
+
+async function writeOnlineState() {
+  if (state.mode !== "online" || state.online.applyingRemote || !state.online.roomId) return;
+  if (!backendState.ready || !backendState.api) return;
+
+  const revision = (state.online.revision ?? 0) + 1;
+  state.online.revision = revision;
+  try {
+    await backendState.api.updateRoom(GAME_ID, state.online.roomId, {
+      status: state.gameOver ? "finished" : "playing",
+      state: serializeOnlineState(revision),
+    });
+  } catch (error) {
+    console.warn("[Reversi] 온라인 상태 저장 실패:", error);
+    setOnlineStatus("error", "방 상태를 저장하지 못했습니다. 연결을 확인해 주세요.");
+    render();
+  }
+}
+
+function serializeOnlineState(revision = state.online.revision ?? 0) {
+  return {
+    board: serializeBoard(state.board),
+    current: state.current,
+    gameOver: state.gameOver,
+    message: state.message,
+    moveHistory: state.moveHistory,
+    lastMove: state.lastMove,
+    resultSummary: state.resultSummary,
+    revision,
+    updatedAtMs: Date.now(),
+  };
+}
+
+function serializeBoard(board) {
+  return board.map((row) =>
+    row
+      .map((cell) => {
+        if (cell.terrain === "blocked") return "#";
+        if (cell.piece?.owner === "black") return "b";
+        if (cell.piece?.owner === "white") return "w";
+        return ".";
+      })
+      .join(""),
+  );
+}
+
+function deserializeBoard(rows) {
+  return rows.map((row) =>
+    String(row)
+      .split("")
+      .map((value) => {
+        if (value === "#") {
+          return { terrain: "blocked", piece: null };
+        }
+        if (value === "b") {
+          return { terrain: "open", piece: createPiece("black") };
+        }
+        if (value === "w") {
+          return { terrain: "open", piece: createPiece("white") };
+        }
+        return { terrain: "open", piece: null };
+      }),
+  );
+}
+
+function setOnlineStatus(status, message) {
+  if (!state?.online) return;
+  state.online.status = status;
+  state.message = message;
+}
+
+function onlineErrorMessage(error) {
+  if (error?.code === "permission-denied") {
+    return "Firebase 권한 문제로 방을 만들 수 없습니다. Firestore Rules에서 games/{gameId}/rooms 경로를 허용해야 합니다.";
+  }
+
+  if (error?.code === "unavailable") {
+    return "Firebase 연결이 불안정합니다. 네트워크를 확인한 뒤 다시 시도해 주세요.";
+  }
+
+  if (error?.code === "timeout") {
+    return `${error.message} Firebase 연결 또는 보안 규칙을 확인해 주세요.`;
+  }
+
+  return "온라인 방 연결에 실패했습니다. 브라우저 콘솔의 [Reversi] 로그를 확인해 주세요.";
+}
+
+function buildInviteUrl(roomId = state.online.roomId) {
+  if (!roomId) return "";
+  const url = new URL(window.location.href);
+  url.pathname = url.pathname.replace(/index\.html$/, "lobby.html");
+  url.search = new URLSearchParams({ room: roomId }).toString();
+  return url.toString();
+}
+
+function replaceRoomUrl(roomId) {
+  const params = new URLSearchParams({
+    mode: "online",
+    room: roomId,
+  });
+  window.history.replaceState(null, "", `index.html?${params.toString()}`);
+}
+
+function renderOnlinePanel() {
+  if (!onlinePanelEl || !roomCodeValueEl || !roomStatusValueEl || !copyRoomButtonEl) return;
+
+  onlinePanelEl.hidden = state.mode !== "online";
+  if (state.mode !== "online") return;
+
+  roomCodeValueEl.textContent = onlineRoomCodeLabel();
+  roomStatusValueEl.textContent = onlineStatusLabel();
+  copyRoomButtonEl.disabled = !state.online.inviteUrl;
+}
+
+function onlineRoomCodeLabel() {
+  if (state.online.roomId) return state.online.roomId;
+  if (state.online.status === "connecting") return "생성 중";
+  if (state.online.status === "login-required") return "로그인 후 생성";
+  if (state.online.status === "offline") return "모듈 오류";
+  if (state.online.status === "error") return "생성 실패";
+  if (state.online.status === "missing-room") return "방 코드 없음";
+  return "-";
+}
+
+function onlineStatusLabel() {
+  if (state.online.status === "waiting") return "상대 대기";
+  if (state.online.status === "playing") {
+    return state.current === state.online.seat ? "내 차례" : "상대 차례";
+  }
+  if (state.online.status === "finished") return "종료";
+  if (state.online.status === "login-required") return "로그인 필요";
+  if (state.online.status === "error") return "연결 실패";
+  if (state.online.status === "spectating") return "관전";
+  if (state.online.status === "connecting") return "연결 중";
+  return "오프라인";
+}
+
 function render() {
   const score = countScore(state.board);
   const legalMoveMap = new Map(state.legalMoves.map((move) => [cellKey(move.row, move.col), move]));
@@ -1107,11 +1588,7 @@ function render() {
     }
   }
 
-  turnPillEl.textContent = state.gameOver
-    ? "종료"
-    : isComputerTurn()
-      ? "컴퓨터 생각중"
-      : `${currentLabel} 차례`;
+  turnPillEl.textContent = buildTurnLabel(currentLabel);
 
   statusTextEl.textContent = isComputerTurn()
     ? "컴퓨터가 둘 곳을 고르는 중입니다."
@@ -1125,6 +1602,7 @@ function render() {
   modeValueEl.textContent = MODE_LABELS[state.mode];
   difficultyValueEl.textContent = state.mode === "cpu" ? DIFFICULTY_LABELS[state.aiDifficulty] : "-";
   renderSaveState();
+  renderOnlinePanel();
 
   blackScoreCardEl.classList.toggle("mine", state.humanColor === "black");
   whiteScoreCardEl.classList.toggle("mine", state.humanColor === "white");
@@ -1132,6 +1610,17 @@ function render() {
   renderResultOverlay();
   renderHistory();
   scheduleComputerMove();
+}
+
+function buildTurnLabel(currentLabel) {
+  if (state.gameOver) return "종료";
+  if (state.mode === "online") {
+    if (state.online.status === "waiting") return "대기중";
+    if (!state.online.seat) return "관전";
+    return state.current === state.online.seat ? "내 차례" : "상대 차례";
+  }
+  if (isComputerTurn()) return "컴퓨터 생각중";
+  return `${currentLabel} 차례`;
 }
 
 function renderResultOverlay() {
@@ -1195,7 +1684,24 @@ function formatCoordinate(row, col) {
 }
 
 newGameButtonEl.addEventListener("click", () => {
+  if (gameSettings.mode === "online") {
+    window.location.href = "lobby.html";
+    return;
+  }
   createGame(gameSettings);
+});
+
+copyRoomButtonEl?.addEventListener("click", async () => {
+  if (!state?.online?.inviteUrl) return;
+
+  try {
+    await navigator.clipboard.writeText(state.online.inviteUrl);
+    setOnlineStatus(state.online.status, "초대 링크를 복사했습니다.");
+  } catch (error) {
+    console.warn("[Reversi] 초대 링크 복사 실패:", error);
+    window.prompt("초대 링크를 복사하세요.", state.online.inviteUrl);
+  }
+  render();
 });
 
 window.reversiDebug = {
@@ -1203,6 +1709,8 @@ window.reversiDebug = {
   settings: () => gameSettings,
   getLegalMoves,
   getFlipsForMove,
+  serializeBoard,
+  deserializeBoard,
 };
 
 createGame();

@@ -1,29 +1,36 @@
-import { realtimeDb } from "./firebaseApp.js";
+import { db } from "./firebaseApp.js";
 import {
-  child,
-  get,
-  off,
-  onDisconnect,
-  onValue,
-  push,
-  ref,
-  remove,
+  collection,
+  deleteDoc,
+  doc,
+  getDoc,
+  onSnapshot,
   serverTimestamp,
-  set,
-  update,
-} from "firebase/database";
+  setDoc,
+  updateDoc,
+} from "firebase/firestore";
+
+function roomsCollection(gameId) {
+  return collection(db, "games", gameId, "rooms");
+}
 
 function roomRef(gameId, roomId) {
-  return ref(realtimeDb, `rooms/${gameId}/${roomId}`);
+  return doc(roomsCollection(gameId), roomId);
 }
 
-export function makeRoomId() {
-  return push(ref(realtimeDb, "roomIds")).key;
+function normalizePatch(patch) {
+  return Object.fromEntries(
+    Object.entries(patch).map(([key, value]) => [key.replaceAll("/", "."), value]),
+  );
 }
 
-export async function createRoom({ gameId, roomId = makeRoomId(), data }) {
+export function makeRoomId(gameId = "shared") {
+  return doc(roomsCollection(gameId)).id;
+}
+
+export async function createRoom({ gameId, roomId = makeRoomId(gameId), data }) {
   const target = roomRef(gameId, roomId);
-  await set(target, {
+  await setDoc(target, {
     ...data,
     createdAt: serverTimestamp(),
     updatedAt: serverTimestamp(),
@@ -32,47 +39,53 @@ export async function createRoom({ gameId, roomId = makeRoomId(), data }) {
 }
 
 export async function getRoom(gameId, roomId) {
-  const snap = await get(roomRef(gameId, roomId));
-  return snap.exists() ? snap.val() : null;
+  const snap = await getDoc(roomRef(gameId, roomId));
+  return snap.exists() ? { id: snap.id, ...snap.data() } : null;
 }
 
 export async function updateRoom(gameId, roomId, patch) {
-  await update(roomRef(gameId, roomId), {
-    ...patch,
+  await updateDoc(roomRef(gameId, roomId), {
+    ...normalizePatch(patch),
     updatedAt: serverTimestamp(),
   });
 }
 
 export function listenRoom(gameId, roomId, callback) {
-  const target = roomRef(gameId, roomId);
-  onValue(target, (snap) => {
-    callback(snap.exists() ? snap.val() : null);
-  });
-  return () => off(target);
+  return onSnapshot(
+    roomRef(gameId, roomId),
+    (snap) => {
+      callback(snap.exists() ? { id: snap.id, ...snap.data() } : null);
+    },
+    (error) => {
+      console.warn("[Room API] 방 구독 실패:", error);
+      callback(null, error);
+    },
+  );
 }
 
 export async function pushRoomMove({ gameId, roomId, move }) {
-  const movesRef = child(roomRef(gameId, roomId), "moves");
-  const nextMoveRef = push(movesRef);
-  await set(nextMoveRef, {
+  const moveRef = doc(collection(roomRef(gameId, roomId), "moves"));
+  await setDoc(moveRef, {
     ...move,
     createdAt: serverTimestamp(),
   });
-  return nextMoveRef.key;
+  return moveRef.id;
 }
 
 export async function setPresence({ gameId, roomId, uid, data }) {
-  const presenceRef = child(roomRef(gameId, roomId), `presence/${uid}`);
-  await set(presenceRef, {
-    ...data,
-    online: true,
-    updatedAt: serverTimestamp(),
-  });
-  await onDisconnect(presenceRef).remove();
+  await setDoc(
+    doc(roomRef(gameId, roomId), "presence", uid),
+    {
+      ...data,
+      online: true,
+      updatedAt: serverTimestamp(),
+    },
+    { merge: true },
+  );
 }
 
 export async function leavePresence({ gameId, roomId, uid }) {
-  await remove(child(roomRef(gameId, roomId), `presence/${uid}`));
+  await deleteDoc(doc(roomRef(gameId, roomId), "presence", uid));
 }
 
 export const roomApi = {

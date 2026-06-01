@@ -34,7 +34,7 @@
         <form id="lobbyForm" class="lobby-panel">
           <fieldset>
             <legend>플레이 방식</legend>
-            <div class="option-grid two">
+            <div class="option-grid three">
               <label class="option-tile">
                 <input type="radio" name="mode" value="cpu" checked />
                 <span>VS 컴퓨터</span>
@@ -42,6 +42,10 @@
               <label class="option-tile">
                 <input type="radio" name="mode" value="local" />
                 <span>로컬 2인</span>
+              </label>
+              <label class="option-tile">
+                <input type="radio" name="mode" value="online" />
+                <span>온라인</span>
               </label>
             </div>
           </fieldset>
@@ -69,6 +73,18 @@
               <option value="minimax3">수읽기</option>
               <option value="minimax4">고수</option>
             </select>
+          </fieldset>
+
+          <fieldset id="onlineField" hidden>
+            <legend>온라인 방</legend>
+            <div class="online-auth-row">
+              <span id="onlineAuthText">로그인 확인 중</span>
+              <button id="onlineLoginButton" type="button">Google 로그인</button>
+            </div>
+            <div class="room-code-row">
+              <input id="roomCodeInput" name="room" type="text" autocomplete="off" inputmode="latin" placeholder="초대 코드 입력" />
+            </div>
+            <p id="onlineHelpText">빈칸으로 시작하면 새 방을 만들고, 코드를 입력하면 그 방에 참가합니다.</p>
           </fieldset>
 
           <fieldset>
@@ -136,6 +152,11 @@
       const blockedValue = document.querySelector("#blockedValue");
       const difficultySelect = document.querySelector("#difficultySelect");
       const difficultyField = document.querySelector("#difficultyField");
+      const onlineField = document.querySelector("#onlineField");
+      const onlineAuthText = document.querySelector("#onlineAuthText");
+      const onlineLoginButton = document.querySelector("#onlineLoginButton");
+      const onlineHelpText = document.querySelector("#onlineHelpText");
+      const roomCodeInput = document.querySelector("#roomCodeInput");
       const summaryMode = document.querySelector("#summaryMode");
       const summaryPlayer = document.querySelector("#summaryPlayer");
       const summaryDifficulty = document.querySelector("#summaryDifficulty");
@@ -149,35 +170,113 @@
         minimax3: "수읽기",
         minimax4: "고수",
       };
+      let onlineUser = null;
+      let onlineAuthReady = false;
+
+      const initialRoomCode = new URLSearchParams(window.location.search).get("room");
+      if (initialRoomCode) {
+        form.elements.mode.value = "online";
+        roomCodeInput.value = normalizeRoomCode(initialRoomCode);
+      }
 
       function getFormValue(name) {
         return new FormData(form).get(name);
+      }
+
+      function normalizeRoomCode(value) {
+        return String(value ?? "")
+          .trim()
+          .replace(/\s+/g, "")
+          .toUpperCase();
       }
 
       function syncLobby() {
         const mode = getFormValue("mode");
         const player = getFormValue("player");
         const blocked = blockedInput.value;
+        const onlineSelected = mode === "online";
 
         difficultyField.hidden = mode !== "cpu";
+        onlineField.hidden = !onlineSelected;
         blockedValue.textContent = blocked;
-        summaryMode.textContent = mode === "cpu" ? "VS 컴퓨터" : "로컬 2인";
+        summaryMode.textContent =
+          mode === "cpu" ? "VS 컴퓨터" : mode === "online" ? "온라인" : "로컬 2인";
         summaryPlayer.textContent = player === "black" ? "흑" : "백";
         summaryDifficulty.textContent = mode === "cpu" ? difficultyNames[difficultySelect.value] : "-";
         summaryBlocked.textContent = blocked;
+
+        form.querySelector(".primary-action").disabled =
+          onlineSelected && (!onlineAuthReady || !onlineUser);
+        if (onlineSelected && !onlineAuthReady) {
+          onlineHelpText.textContent = "온라인 로그인 상태를 확인하고 있습니다.";
+        } else if (onlineSelected && !onlineUser) {
+          onlineHelpText.textContent = "온라인 방을 만들거나 참가하려면 Google 로그인이 필요합니다.";
+        } else {
+          onlineHelpText.textContent = "빈칸으로 시작하면 새 방을 만들고, 코드를 입력하면 그 방에 참가합니다.";
+        }
       }
 
       form.addEventListener("input", syncLobby);
       form.addEventListener("submit", (event) => {
         event.preventDefault();
+        const mode = getFormValue("mode");
         const params = new URLSearchParams({
-          mode: getFormValue("mode"),
+          mode,
           player: getFormValue("player"),
           difficulty: getFormValue("difficulty"),
           blocked: blockedInput.value,
         });
+        if (mode === "online") {
+          const roomCode = normalizeRoomCode(roomCodeInput.value);
+          if (roomCode) {
+            params.set("room", roomCode);
+          } else {
+            params.set("create", "1");
+          }
+        }
         window.location.href = `index.html?${params.toString()}`;
       });
+
+      async function setupOnlineAuth() {
+        try {
+          const { getCurrentUser, onAuthStateChanged, signInWithGoogle } = await import(
+            "../../shared/backend/authApi.js"
+          );
+
+          onlineAuthReady = true;
+
+          const applyAuthUser = (user) => {
+            onlineUser = user && !user.isAnonymous ? user : null;
+            onlineAuthText.textContent = onlineUser ? "온라인 로그인됨" : "온라인 로그인 필요";
+            onlineLoginButton.hidden = Boolean(onlineUser);
+            syncLobby();
+          };
+
+          applyAuthUser(getCurrentUser());
+          onAuthStateChanged(applyAuthUser);
+
+          onlineLoginButton.addEventListener("click", async () => {
+            onlineLoginButton.disabled = true;
+            onlineAuthText.textContent = "로그인 중";
+            try {
+              await signInWithGoogle();
+            } catch (error) {
+              console.error("[Reversi] Google 로그인 실패:", error);
+              onlineAuthText.textContent =
+                error.code === "auth/popup-closed-by-user" ? "로그인 취소됨" : "로그인 실패";
+            } finally {
+              onlineLoginButton.disabled = false;
+            }
+          });
+        } catch (error) {
+          console.warn("[Reversi] 온라인 로그인 모듈 로드 실패:", error);
+          onlineAuthReady = true;
+          onlineUser = null;
+          onlineAuthText.textContent = "온라인 로그인 사용 불가";
+          onlineLoginButton.hidden = true;
+          syncLobby();
+        }
+      }
 
       function renderLeaderboard(entries) {
         leaderboardList.innerHTML = "";
@@ -221,6 +320,7 @@
       }
 
       syncLobby();
+      setupOnlineAuth();
       loadLeaderboard();
     </script>
   </body>

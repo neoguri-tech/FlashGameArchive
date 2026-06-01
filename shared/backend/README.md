@@ -23,12 +23,10 @@ platform/events/items/{eventId}
 platform/gameStats/games/{gameId}
 
 games/{gameId}/leaderboards/{leaderboardId}/entries/{entryId}
-```
 
-## 공통 Realtime Database 경로
-
-```text
-rooms/{gameId}/{roomId}
+games/{gameId}/rooms/{roomId}
+games/{gameId}/rooms/{roomId}/presence/{uid}
+games/{gameId}/rooms/{roomId}/moves/{moveId}
 ```
 
 ## 새 게임 권장 사용법
