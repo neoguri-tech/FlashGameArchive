@@ -1,0 +1,243 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>마이페이지 - 네오구리</title>
+    <script type="importmap">
+      {
+        "imports": {
+          "firebase/app": "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js",
+          "firebase/analytics": "https://www.gstatic.com/firebasejs/10.12.0/firebase-analytics.js",
+          "firebase/auth": "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js",
+          "firebase/firestore": "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js",
+          "firebase/database": "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js"
+        }
+      }
+    </script>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="page-shell">
+      <header class="page-header">
+        <a class="brand" href="../index.html" aria-label="홈으로 이동">
+          <span class="brand-mark" aria-hidden="true">N</span>
+          <span>
+            <strong>네오구리</strong>
+            <small>My Page</small>
+          </span>
+        </a>
+        <a class="home-link" href="../index.html">홈</a>
+      </header>
+
+      <section class="profile-layout">
+        <section class="profile-main">
+          <p class="eyebrow">Profile</p>
+          <h1>마이페이지</h1>
+
+          <div id="signedOutPanel" class="panel" hidden>
+            <div>
+              <h2>로그인</h2>
+              <p>닉네임, 기록 저장, 리더보드 기능을 사용하려면 Google 로그인이 필요합니다.</p>
+            </div>
+            <div class="button-row">
+              <button id="googleLoginButton" class="primary" type="button">Google 로그인</button>
+            </div>
+          </div>
+
+          <div id="profilePanel" class="panel" hidden>
+            <div class="profile-top">
+              <div>
+                <h2 id="accountTitle">프로필</h2>
+                <p id="accountMeta">계정 정보를 불러오는 중...</p>
+              </div>
+              <button id="logoutButton" type="button">로그아웃</button>
+            </div>
+
+            <form id="nicknameForm" class="nickname-form">
+              <label for="publicNameInput">공개 닉네임</label>
+              <div class="input-row">
+                <input
+                  id="publicNameInput"
+                  name="publicName"
+                  type="text"
+                  maxlength="16"
+                  autocomplete="nickname"
+                  placeholder="닉네임"
+                />
+                <button class="primary" type="submit">저장</button>
+              </div>
+              <p id="nicknameHelp">리더보드와 멀티플레이에서 표시됩니다.</p>
+              <p id="formStatus" class="form-status" aria-live="polite"></p>
+            </form>
+
+            <div id="guestPanel" class="guest-panel" hidden>
+              <span>임시 계정</span>
+              <button id="linkGoogleButton" class="primary" type="button">Google 계정으로 연동</button>
+            </div>
+          </div>
+        </section>
+
+        <aside class="info-panel">
+          <h2>계정 상태</h2>
+          <dl>
+            <div>
+              <dt>접속</dt>
+              <dd id="statusValue">확인 중</dd>
+            </div>
+            <div>
+              <dt>표시 이름</dt>
+              <dd id="publicNameValue">-</dd>
+            </div>
+            <div>
+              <dt>계정 종류</dt>
+              <dd id="accountTypeValue">-</dd>
+            </div>
+          </dl>
+        </aside>
+      </section>
+    </main>
+
+    <script type="module">
+      const signedOutPanel = document.querySelector("#signedOutPanel");
+      const profilePanel = document.querySelector("#profilePanel");
+      const guestPanel = document.querySelector("#guestPanel");
+      const googleLoginButton = document.querySelector("#googleLoginButton");
+      const linkGoogleButton = document.querySelector("#linkGoogleButton");
+      const logoutButton = document.querySelector("#logoutButton");
+      const nicknameForm = document.querySelector("#nicknameForm");
+      const publicNameInput = document.querySelector("#publicNameInput");
+      const formStatus = document.querySelector("#formStatus");
+      const accountTitle = document.querySelector("#accountTitle");
+      const accountMeta = document.querySelector("#accountMeta");
+      const statusValue = document.querySelector("#statusValue");
+      const publicNameValue = document.querySelector("#publicNameValue");
+      const accountTypeValue = document.querySelector("#accountTypeValue");
+
+      let currentUser = null;
+      let authRenderVersion = 0;
+
+      function setBusy(busy) {
+        for (const control of document.querySelectorAll("button, input")) {
+          control.disabled = busy;
+        }
+      }
+
+      function setStatus(message, type = "") {
+        formStatus.textContent = message;
+        formStatus.dataset.type = type;
+      }
+
+      function renderSignedOut() {
+        currentUser = null;
+        signedOutPanel.hidden = false;
+        profilePanel.hidden = true;
+        guestPanel.hidden = true;
+        statusValue.textContent = "로그아웃";
+        publicNameValue.textContent = "-";
+        accountTypeValue.textContent = "-";
+      }
+
+      async function renderProfile(user, api, renderVersion) {
+        currentUser = user;
+        await api.ensureUserProfile(user);
+        const profile = await api.getUserProfile(user.uid);
+        const publicName = api.getProfilePublicName(profile, user);
+        const latestUser = api.getCurrentUser();
+        if (renderVersion !== authRenderVersion || latestUser?.uid !== user.uid) {
+          return;
+        }
+
+        signedOutPanel.hidden = true;
+        profilePanel.hidden = false;
+        guestPanel.hidden = !user.isAnonymous;
+        accountTitle.textContent = publicName;
+        accountMeta.textContent = user.isAnonymous ? "임시 계정으로 접속 중" : "Google 계정으로 접속 중";
+        publicNameInput.value = publicName;
+        statusValue.textContent = "로그인";
+        publicNameValue.textContent = publicName;
+        accountTypeValue.textContent = user.isAnonymous ? "임시 계정" : "Google";
+        setStatus("");
+      }
+
+      if (window.location.protocol === "file:") {
+        signedOutPanel.hidden = false;
+        signedOutPanel.querySelector("p").textContent = "마이페이지는 Live Server에서 사용할 수 있습니다.";
+        statusValue.textContent = "로컬 서버 필요";
+        setBusy(true);
+      } else {
+        const authApi = await import("../shared/backend/authApi.js");
+        const profileApi = await import("../shared/backend/profileApi.js");
+        const api = { ...authApi, ...profileApi };
+
+        authApi.onAuthStateChanged((user) => {
+          authRenderVersion += 1;
+          const renderVersion = authRenderVersion;
+
+          if (user) {
+            renderProfile(user, api, renderVersion).catch((error) => {
+              if (renderVersion !== authRenderVersion) return;
+              console.error("프로필 로드 실패:", error);
+              setStatus("프로필을 불러오지 못했습니다.", "error");
+            });
+          } else {
+            renderSignedOut();
+          }
+        });
+
+        googleLoginButton.addEventListener("click", async () => {
+          setBusy(true);
+          try {
+            await authApi.signInWithGoogle();
+          } finally {
+            setBusy(false);
+          }
+        });
+
+        linkGoogleButton.addEventListener("click", async () => {
+          setBusy(true);
+          try {
+            await authApi.signInWithGoogle();
+          } finally {
+            setBusy(false);
+          }
+        });
+
+        logoutButton.addEventListener("click", async () => {
+          setBusy(true);
+          try {
+            if (!authApi.getCurrentUser()) {
+              renderSignedOut();
+              return;
+            }
+            await authApi.signOut();
+          } finally {
+            setBusy(false);
+          }
+        });
+
+        nicknameForm.addEventListener("submit", async (event) => {
+          event.preventDefault();
+          if (!currentUser) return;
+
+          setBusy(true);
+          setStatus("");
+          try {
+            const result = await profileApi.updatePublicName(publicNameInput.value);
+            if (!result.ok) {
+              setStatus(result.message, "error");
+              return;
+            }
+            await renderProfile(currentUser, api, authRenderVersion);
+            setStatus("닉네임을 저장했습니다.", "success");
+          } catch (error) {
+            console.error("닉네임 저장 실패:", error);
+            setStatus("닉네임 저장에 실패했습니다.", "error");
+          } finally {
+            setBusy(false);
+          }
+        });
+      }
+    </script>
+  </body>
+</html>

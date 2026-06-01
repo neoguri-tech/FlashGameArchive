@@ -12,7 +12,8 @@
           "firebase/app": "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js",
           "firebase/analytics": "https://www.gstatic.com/firebasejs/10.12.0/firebase-analytics.js",
           "firebase/auth": "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js",
-          "firebase/firestore": "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js"
+          "firebase/firestore": "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js",
+          "firebase/database": "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js"
         }
       }
     </script>
@@ -187,22 +188,15 @@
   <script type="module">
     async function bootstrapFirebase() {
       if (window.location.protocol === 'file:') {
-        console.warn('Firebase 로그인은 로컬 서버(http://127.0.0.1:8000/)에서만 실행됩니다.');
+        console.warn('Firebase 로그인은 로컬 서버(http://127.0.0.1:5500/)에서만 실행됩니다.');
         return;
       }
 
       try {
         const { default: FirebaseApi } = await import('./src/firebase/firebaseApi.js');
 
-        FirebaseApi.onAuthStateChanged(async (user) => {
-          if (!user) {
-            // 로그인 안 되어있으면 게스트 모드로 자동 로그인
-            try {
-              await FirebaseApi.signInAsGuest();
-            } catch (error) {
-              console.error("게스트 로그인 실패. 파이어베이스 익명 로그인을 활성화해주세요.", error);
-            }
-          }
+        FirebaseApi.onAuthStateChanged(() => {
+          // 로그인은 선택 사항입니다. 미로그인 상태에서도 로컬 플레이는 계속 가능합니다.
         });
       } catch (error) {
         console.error("Firebase 초기화 실패", error);

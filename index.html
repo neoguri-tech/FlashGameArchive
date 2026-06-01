@@ -4,6 +4,17 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>네오구리 플래시 게임 아카이브</title>
+    <script type="importmap">
+      {
+        "imports": {
+          "firebase/app": "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js",
+          "firebase/analytics": "https://www.gstatic.com/firebasejs/10.12.0/firebase-analytics.js",
+          "firebase/auth": "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js",
+          "firebase/firestore": "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js",
+          "firebase/database": "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js"
+        }
+      }
+    </script>
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
@@ -15,10 +26,19 @@
           <small>Flash Game Archive</small>
         </span>
       </a>
-      <nav aria-label="게임 바로가기">
-        <a href="number_palace/index.html">러닝 숫자야구</a>
-        <a href="smokechoo/index.html">칙칙퍽퍽</a>
-      </nav>
+      <div class="header-actions">
+        <nav aria-label="게임 바로가기">
+          <a href="games/number_palace/index.html">러닝 숫자야구</a>
+          <a href="games/smokechoo/index.html">칙칙퍽퍽</a>
+          <a href="games/reversi/lobby.html">리버시 랩</a>
+        </nav>
+        <div class="auth-panel" aria-label="로그인 상태">
+          <span id="authSummary">로그인 확인 중</span>
+          <button id="googleLoginButton" type="button">Google 로그인</button>
+          <a id="myPageLink" class="auth-link" href="mypage/" hidden>마이페이지</a>
+          <button id="logoutButton" type="button" hidden>로그아웃</button>
+        </div>
+      </div>
     </header>
 
     <main>
@@ -48,7 +68,7 @@
 
         <div class="game-grid">
           <article class="game-card">
-            <a class="card-link" href="number_palace/index.html" aria-label="러닝 숫자야구 플레이하기"></a>
+            <a class="card-link" href="games/number_palace/index.html" aria-label="러닝 숫자야구 플레이하기"></a>
             <div class="game-media image-media portrait-media">
               <img
                 src="assets/home/number-palace-screenshot.png"
@@ -63,7 +83,7 @@
                   레인을 달리며 숫자를 모으고, 비밀 조합을 맞히는 러닝 숫자야구 게임입니다.
                 </p>
               </div>
-              <a class="play-button" href="number_palace/index.html">
+              <a class="play-button" href="games/number_palace/index.html">
                 플레이
                 <span aria-hidden="true">→</span>
               </a>
@@ -71,7 +91,7 @@
           </article>
 
           <article class="game-card">
-            <a class="card-link" href="smokechoo/index.html" aria-label="칙칙퍽퍽 플레이하기"></a>
+            <a class="card-link" href="games/smokechoo/index.html" aria-label="칙칙퍽퍽 플레이하기"></a>
             <div class="game-media image-media">
               <img
                 src="assets/home/smokechoo-screenshot.png"
@@ -86,7 +106,35 @@
                   흡연충을 개과천선시키고 연기와 화재를 막아 금연 행사 행렬에 합류시키세요.
                 </p>
               </div>
-              <a class="play-button" href="smokechoo/index.html">
+              <a class="play-button" href="games/smokechoo/index.html">
+                플레이
+                <span aria-hidden="true">→</span>
+              </a>
+            </div>
+          </article>
+
+          <article class="game-card">
+            <a class="card-link" href="games/reversi/lobby.html" aria-label="리버시 랩 플레이하기"></a>
+            <div class="game-media reversi-media" aria-hidden="true">
+              <div class="reversi-preview">
+                <span class="preview-piece preview-white p1"></span>
+                <span class="preview-piece preview-black p2"></span>
+                <span class="preview-piece preview-black p3"></span>
+                <span class="preview-piece preview-white p4"></span>
+                <span class="preview-move m1"></span>
+                <span class="preview-move m2"></span>
+                <span class="preview-block b1"></span>
+              </div>
+            </div>
+            <div class="game-content">
+              <div>
+                <p class="game-kicker">Reversi Lab</p>
+                <h3>리버시 랩</h3>
+                <p>
+                  기본 리버시에서 출발해 구멍, 초능력, 특수 돌을 얹을 수 있게 만든 실험판입니다.
+                </p>
+              </div>
+              <a class="play-button" href="games/reversi/lobby.html">
                 플레이
                 <span aria-hidden="true">→</span>
               </a>
@@ -95,5 +143,103 @@
         </div>
       </section>
     </main>
+    <script type="module">
+      const authSummaryEl = document.querySelector("#authSummary");
+      const googleLoginButton = document.querySelector("#googleLoginButton");
+      const myPageLink = document.querySelector("#myPageLink");
+      const logoutButton = document.querySelector("#logoutButton");
+      let authRenderVersion = 0;
+
+      function setControlsDisabled(disabled) {
+        googleLoginButton.disabled = disabled;
+        logoutButton.disabled = disabled;
+      }
+
+      function renderSignedOut() {
+        authSummaryEl.textContent = "로그인 안 됨";
+        googleLoginButton.hidden = false;
+        myPageLink.hidden = true;
+        logoutButton.hidden = true;
+        setControlsDisabled(false);
+      }
+
+      async function renderSignedIn(user, getUserPublicName, getCurrentUser, renderVersion) {
+        const publicName = await getUserPublicName(user);
+        const latestUser = getCurrentUser();
+        if (renderVersion !== authRenderVersion || latestUser?.uid !== user.uid) {
+          return;
+        }
+
+        authSummaryEl.textContent = user.isAnonymous ? `${publicName} 접속 중` : `${publicName}님`;
+        googleLoginButton.hidden = !user.isAnonymous;
+        myPageLink.hidden = false;
+        logoutButton.hidden = false;
+        setControlsDisabled(false);
+      }
+
+      if (window.location.protocol === "file:") {
+        authSummaryEl.textContent = "로그인은 로컬 서버에서 가능";
+        setControlsDisabled(true);
+      } else {
+        try {
+          const {
+            getCurrentUser,
+            getUserPublicName,
+            onAuthStateChanged,
+            signInWithGoogle,
+            signOut,
+          } = await import("./shared/backend/authApi.js");
+
+          onAuthStateChanged((user) => {
+            authRenderVersion += 1;
+            const renderVersion = authRenderVersion;
+
+            if (user) {
+              renderSignedIn(user, getUserPublicName, getCurrentUser, renderVersion).catch((error) => {
+                if (renderVersion !== authRenderVersion) return;
+                console.error("공개 닉네임 조회 실패:", error);
+                authSummaryEl.textContent = user.isAnonymous ? "임시 계정 접속 중" : "로그인됨";
+                myPageLink.hidden = false;
+                setControlsDisabled(false);
+              });
+            } else {
+              renderSignedOut();
+            }
+          });
+
+          googleLoginButton.addEventListener("click", async () => {
+            setControlsDisabled(true);
+            try {
+              await signInWithGoogle();
+            } catch (error) {
+              console.error("Google 로그인 실패:", error);
+              authSummaryEl.textContent =
+                error.code === "auth/popup-closed-by-user" ? "로그인 취소됨" : "Google 로그인 실패";
+              setControlsDisabled(false);
+            }
+          });
+
+          logoutButton.addEventListener("click", async () => {
+            setControlsDisabled(true);
+            try {
+              if (!getCurrentUser()) {
+                renderSignedOut();
+                return;
+              }
+              await signOut();
+            } catch (error) {
+              console.error("로그아웃 실패:", error);
+              authSummaryEl.textContent = "로그아웃 실패";
+            } finally {
+              setControlsDisabled(false);
+            }
+          });
+        } catch (error) {
+          console.error("공통 로그인 모듈 로드 실패:", error);
+          authSummaryEl.textContent = "로그인 모듈 로드 실패";
+          setControlsDisabled(true);
+        }
+      }
+    </script>
   </body>
 </html>

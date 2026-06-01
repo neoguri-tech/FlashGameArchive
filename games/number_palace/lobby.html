@@ -11,7 +11,8 @@
         "firebase/app": "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js",
         "firebase/analytics": "https://www.gstatic.com/firebasejs/10.12.0/firebase-analytics.js",
         "firebase/auth": "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js",
-        "firebase/firestore": "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js"
+        "firebase/firestore": "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js",
+        "firebase/database": "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js"
       }
     }
   </script>
@@ -173,15 +174,13 @@
     // 인증 상태 확인
     FirebaseApi.onAuthStateChanged(async (user) => {
       if (!user) {
-        // 로그인 상태가 아예 없으면 자동 게스트 로그인 시도
-        try {
-          await FirebaseApi.signInAsGuest();
-        } catch (error) {
-          userInfoEl.textContent = '게스트 로그인 실패. 파이어베이스 콘솔에서 익명 로그인을 활성화했는지 확인해주세요.';
-          userInfoEl.style.color = 'var(--danger)';
-          userInfoEl.style.background = 'rgba(255, 111, 97, 0.1)';
-          userInfoEl.style.border = '1px solid rgba(255, 111, 97, 0.2)';
-        }
+        userInfoEl.textContent = '로그인하지 않아도 플레이할 수 있습니다. 기록 저장은 Google 로그인이 필요합니다.';
+        logoutBtn.textContent = 'Google 로그인';
+        logoutBtn.classList.remove('btn-secondary');
+        logoutBtn.classList.add('btn-primary');
+        logoutBtn.onclick = () => {
+          window.location.href = 'login.html';
+        };
       } else {
         try {
           const userData = await FirebaseApi.getUserData();
@@ -199,8 +198,8 @@
         }
 
         if (user.isAnonymous) {
-          userInfoEl.textContent = '게스트 모드로 접속 중입니다.';
-          logoutBtn.textContent = '구글 로그인 연동 (기록 저장)';
+          userInfoEl.textContent = '임시 계정으로 접속 중입니다.';
+          logoutBtn.textContent = 'Google 계정으로 연동';
           logoutBtn.classList.remove('btn-secondary');
           logoutBtn.classList.add('btn-primary');
           

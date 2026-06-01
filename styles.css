@@ -92,6 +92,72 @@ nav {
   gap: 6px;
 }
 
+.header-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  min-width: 0;
+}
+
+.auth-panel {
+  min-height: 38px;
+  padding: 4px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: rgba(27, 31, 35, 0.72);
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.auth-panel span {
+  max-width: 150px;
+  padding: 0 7px;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 800;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.auth-panel button,
+.auth-link {
+  min-height: 30px;
+  padding: 6px 9px;
+  border: 1px solid transparent;
+  border-radius: 7px;
+  background: rgba(255, 255, 255, 0.07);
+  color: var(--text);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 900;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.auth-panel button:hover,
+.auth-panel button:focus-visible,
+.auth-link:hover,
+.auth-link:focus-visible {
+  border-color: rgba(241, 211, 91, 0.38);
+  outline: none;
+}
+
+.auth-panel button:disabled {
+  cursor: not-allowed;
+  opacity: 0.56;
+}
+
+#googleLoginButton {
+  background: var(--gold);
+  color: #15110a;
+}
+
 nav a {
   min-height: 36px;
   padding: 9px 12px;
@@ -256,7 +322,7 @@ h2 {
 
 .game-grid {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   gap: 16px;
 }
 
@@ -307,6 +373,102 @@ h2 {
   object-fit: cover;
   object-position: center 68%;
   background: #0f1317;
+}
+
+.reversi-media {
+  display: grid;
+  place-items: center;
+  padding: 18px;
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.08), transparent 38%),
+    #20282d;
+}
+
+.reversi-preview {
+  position: relative;
+  width: min(88%, 330px);
+  aspect-ratio: 1 / 1;
+  border: 1px solid rgba(13, 18, 17, 0.82);
+  border-radius: 8px;
+  background:
+    linear-gradient(90deg, rgba(5, 16, 11, 0.58) 1px, transparent 1px) 0 0 / 12.5% 12.5%,
+    linear-gradient(180deg, rgba(5, 16, 11, 0.58) 1px, transparent 1px) 0 0 / 12.5% 12.5%,
+    linear-gradient(135deg, #287a57, #1e684d);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.14),
+    0 20px 36px rgba(0, 0, 0, 0.25);
+}
+
+.preview-piece,
+.preview-move,
+.preview-block {
+  position: absolute;
+  width: 9.2%;
+  height: 9.2%;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.preview-piece {
+  box-shadow:
+    inset 0 2px 4px rgba(255, 255, 255, 0.22),
+    inset 0 -4px 7px rgba(0, 0, 0, 0.35),
+    0 7px 12px rgba(0, 0, 0, 0.22);
+}
+
+.preview-white {
+  background: radial-gradient(circle at 34% 28%, #ffffff, #e6ded0 62%, #aaa194);
+}
+
+.preview-black {
+  background: radial-gradient(circle at 35% 28%, #596066, #121518 58%, #050607);
+}
+
+.preview-move {
+  border: 2px solid rgba(241, 211, 91, 0.78);
+  background: rgba(241, 211, 91, 0.15);
+}
+
+.preview-block {
+  border-radius: 5px;
+  background:
+    repeating-linear-gradient(135deg, rgba(255, 255, 255, 0.06) 0 5px, transparent 5px 10px),
+    #27333b;
+}
+
+.p1 {
+  left: 43.75%;
+  top: 43.75%;
+}
+
+.p2 {
+  left: 56.25%;
+  top: 43.75%;
+}
+
+.p3 {
+  left: 43.75%;
+  top: 56.25%;
+}
+
+.p4 {
+  left: 56.25%;
+  top: 56.25%;
+}
+
+.m1 {
+  left: 43.75%;
+  top: 31.25%;
+}
+
+.m2 {
+  left: 68.75%;
+  top: 56.25%;
+}
+
+.b1 {
+  left: 81.25%;
+  top: 31.25%;
 }
 
 .image-media::after {
@@ -366,10 +528,21 @@ h2 {
     padding: 16px 0;
   }
 
+  .header-actions {
+    width: 100%;
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
   nav {
     width: 100%;
     overflow-x: auto;
     padding-bottom: 2px;
+  }
+
+  .auth-panel {
+    max-width: 100%;
+    overflow-x: auto;
   }
 
   main {

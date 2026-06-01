@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>리버시 랩</title>
+    <script type="importmap">
+      {
+        "imports": {
+          "firebase/app": "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js",
+          "firebase/analytics": "https://www.gstatic.com/firebasejs/10.12.0/firebase-analytics.js",
+          "firebase/auth": "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js",
+          "firebase/firestore": "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js",
+          "firebase/database": "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js"
+        }
+      }
+    </script>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="game-shell">
+      <header class="game-header">
+        <a class="home-link" href="lobby.html" aria-label="로비로 이동">
+          <span aria-hidden="true">N</span>
+          <strong>네오구리</strong>
+        </a>
+        <div class="title-block">
+          <p>Reversi Lab</p>
+          <h1>리버시 랩</h1>
+        </div>
+        <div class="turn-pill" id="turnPill" aria-live="polite">흑 차례</div>
+      </header>
+
+      <section class="play-layout">
+        <section class="board-panel" aria-label="리버시 게임판">
+          <div class="board-frame">
+            <div id="board" class="reversi-board" role="grid" aria-label="8 x 8 리버시 보드"></div>
+            <div id="resultOverlay" class="result-overlay" aria-live="polite" hidden>
+              <div class="result-card">
+                <strong id="resultTitle">DRAW</strong>
+                <span id="resultScore">0 : 0</span>
+              </div>
+            </div>
+          </div>
+          <p id="statusText" class="status-text" aria-live="polite"></p>
+        </section>
+
+        <aside class="side-panel" aria-label="게임 설정과 상태">
+          <section class="score-row" aria-label="점수">
+            <div class="score-card black-score">
+              <span>흑</span>
+              <strong id="blackScore">2</strong>
+            </div>
+            <div class="score-card white-score">
+              <span>백</span>
+              <strong id="whiteScore">2</strong>
+            </div>
+          </section>
+
+          <section class="identity-panel" aria-label="플레이어 정보">
+            <div>
+              <span>내 색</span>
+              <strong id="playerColorValue">흑</strong>
+            </div>
+            <div>
+              <span>진행</span>
+              <strong id="modeValue">VS 컴퓨터</strong>
+            </div>
+            <div>
+              <span>컴퓨터</span>
+              <strong id="difficultyValue">입문</strong>
+            </div>
+          </section>
+
+          <section class="control-panel" aria-label="게임 메뉴">
+            <a href="lobby.html">로비</a>
+            <button id="newGameButton" type="button">다시 시작</button>
+          </section>
+
+          <section class="save-panel" aria-label="결과 저장">
+            <div>
+              <span>결과 저장</span>
+              <strong id="saveStateValue">로그인 확인 중</strong>
+            </div>
+            <p id="saveHelpText">Google 로그인 시 VS 컴퓨터 결과가 저장됩니다.</p>
+          </section>
+
+          <section class="rules-panel" aria-label="룰 상태">
+            <div>
+              <span>보드</span>
+              <strong id="boardRule">클래식 8x8</strong>
+            </div>
+            <div>
+              <span>구멍/벽</span>
+              <strong id="blockedRule">0</strong>
+            </div>
+            <div>
+              <span>합법 수</span>
+              <strong id="legalMoveCount">4</strong>
+            </div>
+          </section>
+
+          <section class="history-panel" aria-label="최근 착수">
+            <h2>기록</h2>
+            <ol id="historyList" class="history-list"></ol>
+          </section>
+        </aside>
+      </section>
+    </main>
+
+    <script src="game.js"></script>
+  </body>
+</html>

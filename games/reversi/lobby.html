@@ -1,0 +1,227 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>리버시 랩 - 로비</title>
+    <script type="importmap">
+      {
+        "imports": {
+          "firebase/app": "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js",
+          "firebase/analytics": "https://www.gstatic.com/firebasejs/10.12.0/firebase-analytics.js",
+          "firebase/auth": "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js",
+          "firebase/firestore": "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js",
+          "firebase/database": "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js"
+        }
+      }
+    </script>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="game-shell lobby-shell">
+      <header class="game-header">
+        <a class="home-link" href="../../index.html" aria-label="홈으로 이동">
+          <span aria-hidden="true">N</span>
+          <strong>네오구리</strong>
+        </a>
+        <div class="title-block">
+          <p>Reversi Lab</p>
+          <h1>게임 로비</h1>
+        </div>
+      </header>
+
+      <section class="lobby-layout">
+        <form id="lobbyForm" class="lobby-panel">
+          <fieldset>
+            <legend>플레이 방식</legend>
+            <div class="option-grid two">
+              <label class="option-tile">
+                <input type="radio" name="mode" value="cpu" checked />
+                <span>VS 컴퓨터</span>
+              </label>
+              <label class="option-tile">
+                <input type="radio" name="mode" value="local" />
+                <span>로컬 2인</span>
+              </label>
+            </div>
+          </fieldset>
+
+          <fieldset>
+            <legend>내 색</legend>
+            <div class="option-grid two">
+              <label class="option-tile">
+                <input type="radio" name="player" value="black" checked />
+                <span>흑</span>
+              </label>
+              <label class="option-tile">
+                <input type="radio" name="player" value="white" />
+                <span>백</span>
+              </label>
+            </div>
+          </fieldset>
+
+          <fieldset id="difficultyField">
+            <legend>컴퓨터</legend>
+            <select id="difficultySelect" name="difficulty">
+              <option value="easy" selected>입문</option>
+              <option value="greedy">욕심쟁이</option>
+              <option value="positional">전략가</option>
+              <option value="minimax3">수읽기</option>
+              <option value="minimax4">고수</option>
+            </select>
+          </fieldset>
+
+          <fieldset>
+            <legend>랜덤 금지칸</legend>
+            <div class="range-row">
+              <input id="blockedInput" name="blocked" type="range" min="0" max="14" step="1" value="0" />
+              <strong id="blockedValue">0</strong>
+            </div>
+          </fieldset>
+
+          <div class="lobby-actions">
+            <button class="primary-action" type="submit">시작</button>
+            <a class="secondary-action" href="../../index.html">홈</a>
+          </div>
+        </form>
+
+        <aside class="lobby-side">
+          <section class="lobby-preview" aria-label="선택한 설정">
+            <div class="mini-board" aria-hidden="true">
+              <span class="mini-piece mini-white p1"></span>
+              <span class="mini-piece mini-black p2"></span>
+              <span class="mini-piece mini-black p3"></span>
+              <span class="mini-piece mini-white p4"></span>
+              <span class="mini-block b1"></span>
+              <span class="mini-block b2"></span>
+            </div>
+            <dl>
+              <div>
+                <dt>진행</dt>
+                <dd id="summaryMode">VS 컴퓨터</dd>
+              </div>
+              <div>
+                <dt>내 색</dt>
+                <dd id="summaryPlayer">흑</dd>
+              </div>
+              <div>
+                <dt>컴퓨터</dt>
+                <dd id="summaryDifficulty">입문</dd>
+              </div>
+              <div>
+                <dt>금지칸</dt>
+                <dd id="summaryBlocked">0</dd>
+              </div>
+            </dl>
+          </section>
+
+          <section class="leaderboard-panel" aria-label="리버시 리더보드">
+            <div class="panel-heading">
+              <h2>VS 컴퓨터 최고 승리</h2>
+              <span id="leaderboardStatus">로딩 중</span>
+            </div>
+            <ol id="leaderboardList" class="leaderboard-list">
+              <li>기록을 불러오는 중</li>
+            </ol>
+          </section>
+        </aside>
+      </section>
+    </main>
+
+    <script>
+      const GAME_ID = "reversi";
+      const LEADERBOARD_ID = "cpu_best_win";
+      const form = document.querySelector("#lobbyForm");
+      const blockedInput = document.querySelector("#blockedInput");
+      const blockedValue = document.querySelector("#blockedValue");
+      const difficultySelect = document.querySelector("#difficultySelect");
+      const difficultyField = document.querySelector("#difficultyField");
+      const summaryMode = document.querySelector("#summaryMode");
+      const summaryPlayer = document.querySelector("#summaryPlayer");
+      const summaryDifficulty = document.querySelector("#summaryDifficulty");
+      const summaryBlocked = document.querySelector("#summaryBlocked");
+      const leaderboardStatus = document.querySelector("#leaderboardStatus");
+      const leaderboardList = document.querySelector("#leaderboardList");
+      const difficultyNames = {
+        easy: "입문",
+        greedy: "욕심쟁이",
+        positional: "전략가",
+        minimax3: "수읽기",
+        minimax4: "고수",
+      };
+
+      function getFormValue(name) {
+        return new FormData(form).get(name);
+      }
+
+      function syncLobby() {
+        const mode = getFormValue("mode");
+        const player = getFormValue("player");
+        const blocked = blockedInput.value;
+
+        difficultyField.hidden = mode !== "cpu";
+        blockedValue.textContent = blocked;
+        summaryMode.textContent = mode === "cpu" ? "VS 컴퓨터" : "로컬 2인";
+        summaryPlayer.textContent = player === "black" ? "흑" : "백";
+        summaryDifficulty.textContent = mode === "cpu" ? difficultyNames[difficultySelect.value] : "-";
+        summaryBlocked.textContent = blocked;
+      }
+
+      form.addEventListener("input", syncLobby);
+      form.addEventListener("submit", (event) => {
+        event.preventDefault();
+        const params = new URLSearchParams({
+          mode: getFormValue("mode"),
+          player: getFormValue("player"),
+          difficulty: getFormValue("difficulty"),
+          blocked: blockedInput.value,
+        });
+        window.location.href = `index.html?${params.toString()}`;
+      });
+
+      function renderLeaderboard(entries) {
+        leaderboardList.innerHTML = "";
+
+        if (!entries.length) {
+          leaderboardList.innerHTML = "<li>아직 저장된 승리가 없습니다.</li>";
+          return;
+        }
+
+        for (const entry of entries) {
+          const item = document.createElement("li");
+          const payload = entry.payload ?? {};
+          const difficulty = difficultyNames[payload.difficulty] ?? "난이도";
+          const margin = Number.isFinite(payload.margin) ? `+${payload.margin}` : "";
+          const name = document.createElement("strong");
+          const detail = document.createElement("span");
+
+          name.textContent = `${entry.rank}. ${entry.publicName ?? entry.displayName ?? "플레이어"}`;
+          detail.textContent = `${entry.sortValue}점 · ${difficulty} ${margin}`;
+          item.append(name, detail);
+          leaderboardList.append(item);
+        }
+      }
+
+      async function loadLeaderboard() {
+        try {
+          const { getLeaderboard } = await import("../../shared/backend/leaderboardApi.js");
+          const entries = await getLeaderboard({
+            gameId: GAME_ID,
+            leaderboardId: LEADERBOARD_ID,
+            order: "desc",
+            limitCount: 5,
+          });
+          leaderboardStatus.textContent = "상위 5명";
+          renderLeaderboard(entries);
+        } catch (error) {
+          console.warn("[Reversi] 리더보드 로드 실패:", error);
+          leaderboardStatus.textContent = "오프라인";
+          leaderboardList.innerHTML = "<li>리더보드를 불러올 수 없습니다.</li>";
+        }
+      }
+
+      syncLobby();
+      loadLeaderboard();
+    </script>
+  </body>
+</html>
