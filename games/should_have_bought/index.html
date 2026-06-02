@@ -1,0 +1,208 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>라고 할 때 살걸</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="game-shell">
+      <header class="game-header">
+        <a class="home-link" href="../../index.html" aria-label="홈으로 이동">
+          <span aria-hidden="true">N</span>
+          <strong>네오구리</strong>
+        </a>
+        <div class="title-block">
+          <p>Should Have Bought</p>
+          <h1>라고 할 때 살걸</h1>
+        </div>
+        <div class="value-pill" id="valuePill">설정 대기</div>
+      </header>
+
+      <section id="lobbyPanel" class="lobby-panel" aria-label="게임 설정">
+        <div class="lobby-heading">
+          <span>SETUP</span>
+          <h2>종목 선택</h2>
+        </div>
+
+        <form id="lobbyForm" class="lobby-form">
+          <fieldset class="market-picker">
+            <legend>투자 대상</legend>
+            <label class="market-option">
+              <input type="radio" name="market" value="kospi" checked />
+              <span>
+                <strong>KOSPI</strong>
+                <small>국내 지수</small>
+              </span>
+            </label>
+            <label class="market-option">
+              <input type="radio" name="market" value="btc" />
+              <span>
+                <strong>BTC</strong>
+                <small>비트코인</small>
+              </span>
+            </label>
+            <label class="market-option">
+              <input type="radio" name="market" value="eth" />
+              <span>
+                <strong>ETH</strong>
+                <small>이더리움</small>
+              </span>
+            </label>
+            <label class="market-option">
+              <input type="radio" name="market" value="sol" />
+              <span>
+                <strong>SOL</strong>
+                <small>솔라나</small>
+              </span>
+            </label>
+            <label class="market-option">
+              <input type="radio" name="market" value="soxl" />
+              <span>
+                <strong>SOXL</strong>
+                <small>반도체 3X</small>
+              </span>
+            </label>
+          </fieldset>
+
+          <button id="startGameButton" class="start-button" type="submit">게임 시작</button>
+          <p id="lobbyStatus" class="lobby-status">본 게임의 차트는 실제 1년치 일봉 데이터의 일부를 보여줍니다. 차트 앞에서 당신의 판단은 얼마나 냉철할까요?</p>
+        </form>
+      </section>
+
+      <section id="gameLayout" class="trader-layout" hidden>
+        <section class="chart-panel" aria-label="마켓 차트">
+          <div class="panel-toolbar">
+            <div>
+              <span id="sourceBadge" class="source-badge">데이터 준비</span>
+              <strong id="periodText">-</strong>
+            </div>
+            <div class="toolbar-actions">
+              <button id="settingsButton" type="button">설정</button>
+              <button id="newRoundButton" type="button">새 차트</button>
+            </div>
+          </div>
+
+          <div class="chart-frame">
+            <canvas id="chartCanvas" width="960" height="560" aria-label="예열 10봉과 플레이 30봉 일봉 차트"></canvas>
+            <div id="resultOverlay" class="result-overlay" hidden>
+              <strong id="resultTitle">RESULT</strong>
+              <span id="resultDetail">-</span>
+              <span id="resultOptimal">-</span>
+            </div>
+          </div>
+
+          <div class="day-bar">
+            <span id="dayText">0 / 30</span>
+            <strong id="priceText">-</strong>
+          </div>
+
+          <section class="quantity-panel" aria-label="거래 수량">
+            <label for="quantityInput">거래 수량</label>
+            <div class="quantity-row">
+              <input id="quantityInput" type="number" min="0" step="0.000001" value="0" />
+              <button id="maxBuyButton" type="button">매수 최대</button>
+              <button id="maxSellButton" type="button">매도 최대</button>
+            </div>
+            <p id="quantityHint">매수/매도 가능한 수량을 계산하고 있습니다.</p>
+          </section>
+
+          <div class="action-row">
+            <button id="buyButton" class="buy-button" type="button">매수</button>
+            <button id="sellButton" class="sell-button" type="button">매도</button>
+            <button id="holdButton" class="hold-button" type="button">관망</button>
+          </div>
+
+          <p id="marketMessage" class="market-message">차트를 준비하고 있습니다.</p>
+        </section>
+
+        <aside class="side-panel" aria-label="투자 현황">
+          <section id="avatarPanel" class="avatar-panel tier-steady" aria-label="개미 투자자 상태">
+            <div class="avatar-stage" aria-hidden="true">
+              <div class="ant-avatar">
+                <span class="antenna left"></span>
+                <span class="antenna right"></span>
+                <span class="ant-head">
+                  <span class="eye left"></span>
+                  <span class="eye right"></span>
+                  <span class="mouth"></span>
+                  <span class="tear"></span>
+                  <span class="shades"></span>
+                </span>
+                <span class="ant-body">
+                  <span class="shirt"></span>
+                  <span class="tie"></span>
+                  <span class="chain"></span>
+                </span>
+                <span class="arm left"></span>
+                <span class="arm right"></span>
+                <span class="leg left"></span>
+                <span class="leg right"></span>
+                <span class="prop prop-left"></span>
+                <span class="prop prop-right"></span>
+              </div>
+            </div>
+            <div class="avatar-copy">
+              <span id="avatarBadge">보합</span>
+              <strong id="avatarTitle">차트 공부 개미</strong>
+              <p id="avatarLine">관망도 포지션이다.</p>
+            </div>
+          </section>
+
+          <section class="metric-grid" aria-label="자산">
+            <div class="metric-card">
+              <span>현금</span>
+              <strong id="cashValue">-</strong>
+            </div>
+            <div class="metric-card">
+              <span>보유</span>
+              <strong id="unitValue">-</strong>
+            </div>
+            <div class="metric-card">
+              <span>수익률</span>
+              <strong id="returnValue">-</strong>
+            </div>
+            <div class="metric-card">
+              <span>총 평가금액</span>
+              <strong id="totalValue">-</strong>
+            </div>
+          </section>
+
+          <section class="daily-panel" aria-label="오늘의 일봉">
+            <h2>오늘의 일봉</h2>
+            <dl>
+              <div>
+                <dt>날짜</dt>
+                <dd id="dateValue">-</dd>
+              </div>
+              <div>
+                <dt>시가</dt>
+                <dd id="openValue">-</dd>
+              </div>
+              <div>
+                <dt>고가</dt>
+                <dd id="highValue">-</dd>
+              </div>
+              <div>
+                <dt>저가</dt>
+                <dd id="lowValue">-</dd>
+              </div>
+              <div>
+                <dt>등락</dt>
+                <dd id="changeValue">-</dd>
+              </div>
+            </dl>
+          </section>
+
+          <section class="history-panel" aria-label="매매 기록">
+            <h2>매매 기록</h2>
+            <ol id="historyList" class="history-list"></ol>
+          </section>
+        </aside>
+      </section>
+    </main>
+
+    <script src="game.js"></script>
+  </body>
+</html>
