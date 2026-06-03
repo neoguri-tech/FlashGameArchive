@@ -195,7 +195,7 @@ const CHAOS_POWER_DEFS = {
     name: "가장자리 해일",
     shortText: "가장자리의 상대 돌을 최대 4개까지 파도처럼 쓸어와 내 색으로 바꿉니다.",
     revealText: "가장자리 해일이 상대 돌을 쓸어왔습니다.",
-    tier: 2,
+    tier: 3,
     glyph: "edge-wave",
     accent: "blue",
     target: "instant",
@@ -307,7 +307,7 @@ const CHAOS_STONE_DEFS = {
   vampire_stone: {
     id: "vampire_stone",
     name: "흡혈돌",
-    shortText: "이번 착수로 뒤집은 수에 비례해 주변 상대 돌을 최대 4개 추가로 가져옵니다.",
+    shortText: "이번 착수로 뒤집은 수에 비례해 주변 상대 돌을 최대 5개 추가로 가져옵니다.",
     revealText: "흡혈 파동이 뒤집힌 힘을 먹고 주변 상대 돌을 추가로 가져왔습니다.",
     tier: 2,
     glyph: "vampire",
@@ -317,12 +317,17 @@ const CHAOS_STONE_DEFS = {
 
 const CHAOS_BANNED_LOADOUTS = new Set([
   "black_hole+domino",
+  "black_hole+magnet",
   "black_hole+mirror_stone",
+  "black_hole+split_stone",
   "black_hole+throne",
   "black_hole+king_bomb",
   "black_hole+laser_stone",
   "chain_lightning+domino",
+  "chain_lightning+assassin_stone",
   "chain_lightning+king_bomb",
+  "chain_lightning+magnet",
+  "chain_lightning+mirror_stone",
   "chain_lightning+split_stone",
   "chain_lightning+vampire_stone",
   "comeback_swing+magnet",
@@ -336,21 +341,33 @@ const CHAOS_BANNED_LOADOUTS = new Set([
   "eclipse_3x3+jackpot",
   "eclipse_3x3+king_bomb",
   "eclipse_3x3+magnet",
+  "eclipse_3x3+mirror_stone",
   "eclipse_3x3+vampire_stone",
+  "edge_surge+jackpot",
+  "edge_surge+assassin_stone",
   "edge_surge+king_bomb",
+  "edge_surge+laser_stone",
   "edge_surge+mirror_stone",
   "edge_surge+split_stone",
+  "edge_surge+throne",
   "edge_surge+vampire_stone",
   "gravity_crush+king_bomb",
+  "gravity_crush+domino",
   "gravity_crush+laser_stone",
   "gravity_crush+mirror_stone",
   "move_ban+assassin_stone",
   "move_ban+jackpot",
+  "move_ban+magnet",
   "move_ban+split_stone",
+  "move_ban+throne",
   "ownership_frenzy+magnet",
+  "ownership_frenzy+assassin_stone",
+  "ownership_frenzy+king_bomb",
   "ownership_frenzy+mirror_stone",
   "ownership_frenzy+split_stone",
   "tidal_wave+king_bomb",
+  "tidal_wave+throne",
+  "tidal_wave+split_stone",
   "tidal_wave+vampire_stone",
 ]);
 
@@ -1752,7 +1769,7 @@ function applyPlacedSpecialStoneEffect(playerId, row, col, kind, move, empowered
   }
 
   if (kind === "vampire_stone") {
-    const max = Math.min(empowered ? 5 : 4, Math.max(1, Math.ceil(move.flips.length / 2)));
+    const max = Math.min(empowered ? 6 : 5, Math.max(2, Math.ceil(move.flips.length / 2)));
     const converted = convertAdjacentPieces(row, col, playerId, {
       max,
       opponentOnly: true,
@@ -1761,9 +1778,14 @@ function applyPlacedSpecialStoneEffect(playerId, row, col, kind, move, empowered
       effectLabel: "흡혈",
       effectSource: "vampire_stone",
     });
+    if (!converted.length) {
+      state.board[row][col].piece.modifiers.push("shield");
+    }
     return {
-      result: `실제 효과: 이번 착수의 뒤집힘을 먹고 주변 상대 돌 ${converted.length}개를 추가로 흡혈했습니다.`,
-      empowered: "흡혈 상한이 4개에서 5개로 증가했습니다.",
+      result: converted.length
+        ? `실제 효과: 이번 착수의 뒤집힘을 먹고 주변 상대 돌 ${converted.length}개를 추가로 흡혈했습니다.`
+        : "실제 효과: 흡혈할 상대 돌이 없어 보호막 1회를 얻었습니다.",
+      empowered: "흡혈 상한이 5개에서 6개로 증가했습니다.",
     };
   }
 
