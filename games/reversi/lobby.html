@@ -90,8 +90,20 @@
           <fieldset>
             <legend>랜덤 금지칸</legend>
             <div class="range-row">
-              <input id="blockedInput" name="blocked" type="range" min="0" max="14" step="1" value="0" />
-              <strong id="blockedValue">0</strong>
+              <input id="blockedInput" name="blocked" type="range" min="0" max="14" step="1" value="4" />
+              <strong id="blockedValue">4</strong>
+            </div>
+          </fieldset>
+
+          <fieldset>
+            <legend>특수 룰</legend>
+            <label class="option-tile chaos-toggle">
+              <input id="chaosInput" type="checkbox" name="chaos" value="1" checked />
+              <span>카오스 카드</span>
+            </label>
+            <div class="field-help-row">
+              <p id="chaosHelpText" class="field-help">숨겨진 초능력 1장과 특수돌 1장을 받고 시작합니다.</p>
+              <button id="chaosGuideButton" class="inline-help-button" type="button">목록 보기</button>
             </div>
           </fieldset>
 
@@ -126,7 +138,11 @@
               </div>
               <div>
                 <dt>금지칸</dt>
-                <dd id="summaryBlocked">0</dd>
+                <dd id="summaryBlocked">4</dd>
+              </div>
+              <div>
+                <dt>특수 룰</dt>
+                <dd id="summaryChaos">카오스 카드</dd>
               </div>
             </dl>
           </section>
@@ -144,6 +160,27 @@
       </section>
     </main>
 
+    <dialog id="chaosGuideDialog" class="chaos-guide-dialog" aria-labelledby="chaosGuideTitle">
+      <div class="chaos-guide">
+        <header class="chaos-guide-header">
+          <div>
+            <span>Chaos Cards</span>
+            <h2 id="chaosGuideTitle">카오스 카드 목록</h2>
+          </div>
+          <button id="chaosGuideCloseButton" class="dialog-close-button" type="button" aria-label="닫기">×</button>
+        </header>
+        <div class="chaos-guide-tabs" role="tablist" aria-label="카오스 카드 종류">
+          <button id="powerTabButton" type="button" role="tab" aria-selected="true" aria-controls="chaosGuideList" data-guide-tab="powers">
+            초능력
+          </button>
+          <button id="stoneTabButton" type="button" role="tab" aria-selected="false" aria-controls="chaosGuideList" data-guide-tab="stones">
+            특수돌
+          </button>
+        </div>
+        <div id="chaosGuideList" class="chaos-guide-list" role="tabpanel" aria-labelledby="powerTabButton"></div>
+      </div>
+    </dialog>
+
     <script>
       const GAME_ID = "reversi";
       const LEADERBOARD_ID = "cpu_best_win";
@@ -157,10 +194,18 @@
       const onlineLoginButton = document.querySelector("#onlineLoginButton");
       const onlineHelpText = document.querySelector("#onlineHelpText");
       const roomCodeInput = document.querySelector("#roomCodeInput");
+      const chaosInput = document.querySelector("#chaosInput");
+      const chaosHelpText = document.querySelector("#chaosHelpText");
+      const chaosGuideButton = document.querySelector("#chaosGuideButton");
+      const chaosGuideDialog = document.querySelector("#chaosGuideDialog");
+      const chaosGuideCloseButton = document.querySelector("#chaosGuideCloseButton");
+      const chaosGuideList = document.querySelector("#chaosGuideList");
+      const guideTabButtons = [...document.querySelectorAll("[data-guide-tab]")];
       const summaryMode = document.querySelector("#summaryMode");
       const summaryPlayer = document.querySelector("#summaryPlayer");
       const summaryDifficulty = document.querySelector("#summaryDifficulty");
       const summaryBlocked = document.querySelector("#summaryBlocked");
+      const summaryChaos = document.querySelector("#summaryChaos");
       const leaderboardStatus = document.querySelector("#leaderboardStatus");
       const leaderboardList = document.querySelector("#leaderboardList");
       const difficultyNames = {
@@ -170,8 +215,185 @@
         minimax3: "수읽기",
         minimax4: "고수",
       };
+      const chaosGuide = {
+        powers: [
+          {
+            id: "eclipse_3x3",
+            name: "3x3 일식",
+            glyph: "eclipse",
+            accent: "violet",
+            effectType: "eclipse",
+            effect: "선택한 3x3 구역 안의 상대 돌을 대량으로 내 색으로 바꿉니다.",
+            note: "한 구역을 통째로 뒤흔드는 광역 반전입니다.",
+          },
+          {
+            id: "black_hole",
+            name: "블랙홀",
+            glyph: "black-hole",
+            accent: "blue",
+            effectType: "hole",
+            effect: "빈칸 하나를 구멍으로 만들고 주변 상대 돌을 빨아들여 내 색으로 바꿉니다.",
+            note: "구멍과 흡입이 동시에 터지는 공간 붕괴형 능력입니다.",
+          },
+          {
+            id: "ownership_frenzy",
+            name: "소유권 폭주",
+            glyph: "frenzy",
+            accent: "red",
+            effectType: "frenzy",
+            effect: "내가 뒤집은 돌 주변으로 소유권이 연쇄 전염되어 최대 4개까지 추가 반전이 터집니다.",
+            note: "평범한 착수가 갑자기 큰 파동으로 번질 수 있습니다.",
+          },
+          {
+            id: "comeback_swing",
+            name: "역전세",
+            glyph: "comeback",
+            accent: "green",
+            effectType: "comeback",
+            effect: "8개 이상 밀릴 때 상대 돌 6개를 즉시 강탈해 판세를 다시 끌어옵니다.",
+            note: "일방적으로 터진 판을 한 번 더 붙잡는 역전 카드입니다.",
+          },
+          {
+            id: "move_ban",
+            name: "착수 봉인",
+            glyph: "ban",
+            accent: "red",
+            effectType: "ban",
+            effect: "상대의 좋은 다음 수를 봉인하고, 봉인된 칸 주변 상대 돌을 균열 반전합니다.",
+            note: "상대 선택지를 줄이면서 보드에도 즉시 흔적을 남깁니다.",
+          },
+          {
+            id: "destiny_move",
+            name: "운명의 한 수",
+            glyph: "destiny",
+            accent: "violet",
+            effectType: "destiny",
+            effect: "내 비가장자리 돌 하나에 운명 표식과 보호막을 붙이고, 종료 시 최종 소유자가 +8점을 얻습니다.",
+            note: "보드 위에 지켜야 할 큰 쟁탈 목표가 생깁니다.",
+          },
+          {
+            id: "chain_lightning",
+            name: "연쇄번개",
+            glyph: "lightning-chain",
+            accent: "cyan",
+            effectType: "chain",
+            effect: "붙어 있는 상대 돌 무리를 번개처럼 타고 들어가 연쇄 반전합니다.",
+            note: "상대가 뭉쳐 있을수록 한 번에 크게 터집니다.",
+          },
+          {
+            id: "edge_surge",
+            name: "가장자리 해일",
+            glyph: "edge-wave",
+            accent: "blue",
+            effectType: "wave",
+            effect: "가장자리의 상대 돌을 최대 4개까지 파도처럼 쓸어와 내 색으로 바꿉니다.",
+            note: "가장자리 싸움을 한순간에 뒤집는 압박형 능력입니다.",
+          },
+          {
+            id: "gravity_crush",
+            name: "중력 붕괴",
+            glyph: "gravity",
+            accent: "violet",
+            effectType: "gravity",
+            effect: "상대 돌이 밀집한 구역을 중심으로 압축 붕괴를 일으켜 반전합니다.",
+            note: "돌이 모여 있는 곳에 중력장이 내려앉습니다.",
+          },
+          {
+            id: "tidal_wave",
+            name: "해일",
+            glyph: "tidal-wave",
+            accent: "cyan",
+            effectType: "wave",
+            effect: "한 행 또는 열의 상대 돌을 파도처럼 밀어내며 한꺼번에 가져옵니다.",
+            note: "직선 라인을 시원하게 쓸어내는 대형 반전입니다.",
+          },
+        ],
+        stones: [
+          {
+            id: "domino",
+            name: "도미노돌",
+            glyph: "domino",
+            accent: "green",
+            effect: "착수로 뒤집은 라인 뒤쪽 상대 돌까지 최대 4개 줄줄이 연쇄 반전합니다.",
+            note: "라인이 길게 이어질수록 넘어가는 맛이 커집니다.",
+          },
+          {
+            id: "jackpot",
+            name: "잭팟돌",
+            glyph: "jackpot",
+            accent: "amber",
+            effect: "놓는 순간 작은 당첨이 터지고, 다음 턴 주변 상대 돌을 크게 가져옵니다.",
+            note: "터지기 전 1회 보호가 붙어 보상을 빼앗기기 어렵습니다.",
+          },
+          {
+            id: "throne",
+            name: "왕좌돌",
+            glyph: "throne",
+            accent: "gold",
+            effect: "보호막과 호위 반전을 얻고, 가장자리에 끝까지 남으면 최종 소유자가 보너스를 얻습니다.",
+            note: "왕관이 박힌 거점형 특수돌이라 어디에 둬도 기본 보상이 있습니다.",
+          },
+          {
+            id: "magnet",
+            name: "자석돌",
+            glyph: "magnet",
+            accent: "cyan",
+            effect: "8방향의 먼 상대 돌을 끌어당겨 내 색으로 만들고 1회 보호합니다.",
+            note: "자기장에 걸린 돌들이 한꺼번에 끌려옵니다.",
+          },
+          {
+            id: "king_bomb",
+            name: "대폭발돌",
+            glyph: "mushroom-cloud",
+            accent: "red",
+            effect: "놓는 즉시 행과 열의 상대 돌을 크게 반전하고, 뒤집히면 한 번 더 폭발 파동이 퍼집니다.",
+            note: "버섯구름처럼 크게 터지는 십자 폭발형 돌입니다.",
+          },
+          {
+            id: "mirror_stone",
+            name: "거울돌",
+            glyph: "mirror",
+            accent: "violet",
+            effect: "대칭 위치와 착수 지점 주변의 상대 돌을 최대 4개 함께 반전합니다.",
+            note: "놓은 곳의 반대편에서 거울상이 같이 흔들립니다.",
+          },
+          {
+            id: "laser_stone",
+            name: "레이저돌",
+            glyph: "laser",
+            accent: "cyan",
+            effect: "8방향 광선이 라인을 관통하며 상대 돌을 대량 반전하고 보호합니다.",
+            note: "돌 위에서 빛줄기가 뻗어 나가는 저격형 돌입니다.",
+          },
+          {
+            id: "assassin_stone",
+            name: "암살돌",
+            glyph: "assassin",
+            accent: "red",
+            effect: "3칸 거리 안의 고가치 상대 돌을 골라 암살하듯 반전합니다.",
+            note: "멀리 떨어진 핵심 돌을 조용히 잘라냅니다.",
+          },
+          {
+            id: "split_stone",
+            name: "분열돌",
+            glyph: "split",
+            accent: "green",
+            effect: "주변 빈칸에 내 돌을 복제하고 파편으로 주변 상대 돌도 살짝 반전합니다.",
+            note: "작은 군집을 순식간에 만들어내는 증식형 돌입니다.",
+          },
+          {
+            id: "vampire_stone",
+            name: "흡혈돌",
+            glyph: "vampire",
+            accent: "red",
+            effect: "뒤집은 만큼 주변 상대 돌을 추가로 흡혈하듯 가져옵니다.",
+            note: "많이 뒤집을수록 더 배부르게 빨아들이는 돌입니다.",
+          },
+        ],
+      };
       let onlineUser = null;
       let onlineAuthReady = false;
+      let activeGuideTab = "powers";
 
       const initialRoomCode = new URLSearchParams(window.location.search).get("room");
       if (initialRoomCode) {
@@ -195,15 +417,24 @@
         const player = getFormValue("player");
         const blocked = blockedInput.value;
         const onlineSelected = mode === "online";
+        const chaosAvailable = !onlineSelected;
 
         difficultyField.hidden = mode !== "cpu";
         onlineField.hidden = !onlineSelected;
+        chaosInput.disabled = !chaosAvailable;
+        if (!chaosAvailable) {
+          chaosInput.checked = false;
+        }
         blockedValue.textContent = blocked;
         summaryMode.textContent =
           mode === "cpu" ? "VS 컴퓨터" : mode === "online" ? "온라인" : "로컬 2인";
         summaryPlayer.textContent = player === "black" ? "흑" : "백";
         summaryDifficulty.textContent = mode === "cpu" ? difficultyNames[difficultySelect.value] : "-";
         summaryBlocked.textContent = blocked;
+        summaryChaos.textContent = chaosInput.checked ? "카오스 카드" : "꺼짐";
+        chaosHelpText.textContent = chaosAvailable
+          ? "숨겨진 초능력 1장과 특수돌 1장을 받고 시작합니다."
+          : "온라인 대전은 특수돌 동기화가 붙은 뒤 열 예정입니다.";
 
         form.querySelector(".primary-action").disabled =
           onlineSelected && (!onlineAuthReady || !onlineUser);
@@ -233,9 +464,134 @@
           } else {
             params.set("create", "1");
           }
+        } else {
+          params.set("chaos", chaosInput.checked ? "1" : "0");
         }
         window.location.href = `index.html?${params.toString()}`;
       });
+
+      chaosGuideButton.addEventListener("click", () => {
+        renderChaosGuide(activeGuideTab);
+        if (typeof chaosGuideDialog.showModal === "function") {
+          chaosGuideDialog.showModal();
+        } else {
+          chaosGuideDialog.setAttribute("open", "");
+        }
+      });
+
+      chaosGuideCloseButton.addEventListener("click", () => {
+        closeChaosGuide();
+      });
+
+      chaosGuideDialog.addEventListener("click", (event) => {
+        if (event.target === chaosGuideDialog) {
+          closeChaosGuide();
+        }
+      });
+
+      guideTabButtons.forEach((button) => {
+        button.addEventListener("click", () => {
+          renderChaosGuide(button.dataset.guideTab);
+        });
+      });
+
+      function renderChaosGuide(tab) {
+        activeGuideTab = tab;
+        const entries = chaosGuide[tab];
+        const tabButton = guideTabButtons.find((button) => button.dataset.guideTab === tab);
+
+        guideTabButtons.forEach((button) => {
+          button.setAttribute("aria-selected", String(button === tabButton));
+        });
+        chaosGuideList.setAttribute("aria-labelledby", tabButton.id);
+        chaosGuideList.innerHTML = "";
+
+        for (const entry of entries) {
+          const [name, effect, note] = Array.isArray(entry)
+            ? entry
+            : [entry.name, entry.effect, entry.note];
+          const item = document.createElement("article");
+          item.className = `chaos-guide-item${tab === "stones" || tab === "powers" ? " has-preview" : ""}`;
+
+          if (tab === "powers") {
+            item.append(createPowerPreview(entry));
+          } else if (tab === "stones") {
+            item.append(createStonePreview(entry));
+          }
+
+          const body = document.createElement("div");
+          body.className = "chaos-guide-item-body";
+
+          const title = document.createElement("strong");
+          title.textContent = name;
+
+          const effectText = document.createElement("p");
+          effectText.textContent = effect;
+
+          const noteText = document.createElement("span");
+          noteText.textContent = note;
+
+          body.append(title, effectText, noteText);
+          item.append(body);
+          chaosGuideList.append(item);
+        }
+      }
+
+      function createPowerPreview(power) {
+        const preview = document.createElement("div");
+        preview.className = `power-guide-preview cell effect-cell effect-${power.effectType} effect-source-${power.id}`;
+        preview.dataset.accent = power.accent;
+        preview.setAttribute("aria-hidden", "true");
+
+        const effectVisual = document.createElement("span");
+        effectVisual.className = "effect-visual";
+
+        const grid = document.createElement("span");
+        grid.className = "power-guide-grid";
+
+        const glyph = document.createElement("span");
+        glyph.className = "card-glyph power-guide-glyph";
+        glyph.dataset.glyph = power.glyph;
+
+        preview.append(grid, effectVisual, glyph);
+        return preview;
+      }
+
+      function createStonePreview(stone) {
+        const preview = document.createElement("div");
+        preview.className = `stone-guide-preview cell effect-cell effect-${stone.id} effect-source-${stone.id}`;
+        preview.setAttribute("aria-hidden", "true");
+
+        const effectVisual = document.createElement("span");
+        effectVisual.className = "effect-visual";
+
+        const piece = document.createElement("span");
+        piece.className = "piece black special";
+        piece.dataset.kind = stone.id;
+        piece.dataset.accent = stone.accent;
+
+        const aura = document.createElement("span");
+        aura.className = "piece-aura";
+
+        const owner = document.createElement("span");
+        owner.className = "piece-owner-mark";
+
+        const glyph = document.createElement("span");
+        glyph.className = "piece-glyph";
+        glyph.dataset.glyph = stone.glyph;
+
+        piece.append(aura, owner, glyph);
+        preview.append(effectVisual, piece);
+        return preview;
+      }
+
+      function closeChaosGuide() {
+        if (typeof chaosGuideDialog.close === "function") {
+          chaosGuideDialog.close();
+          return;
+        }
+        chaosGuideDialog.removeAttribute("open");
+      }
 
       async function setupOnlineAuth() {
         try {
@@ -320,6 +676,7 @@
       }
 
       syncLobby();
+      renderChaosGuide(activeGuideTab);
       setupOnlineAuth();
       loadLeaderboard();
     </script>

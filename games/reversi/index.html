@@ -35,6 +35,14 @@
         <section class="board-panel" aria-label="리버시 게임판">
           <div class="board-frame">
             <div id="board" class="reversi-board" role="grid" aria-label="8 x 8 리버시 보드"></div>
+            <div id="cardReveal" class="card-reveal" aria-live="assertive" hidden>
+              <div class="card-reveal__card">
+                <span id="cardRevealGlyph" class="card-reveal__glyph" aria-hidden="true"></span>
+                <span id="cardRevealKicker">초능력 발동</span>
+                <strong id="cardRevealTitle">블랙홀</strong>
+                <p id="cardRevealText">주변 돌이 사라졌습니다.</p>
+              </div>
+            </div>
             <div id="resultOverlay" class="result-overlay" aria-live="polite" hidden>
               <div class="result-card">
                 <strong id="resultTitle">DRAW</strong>
@@ -70,6 +78,29 @@
               <span>컴퓨터</span>
               <strong id="difficultyValue">입문</strong>
             </div>
+          </section>
+
+          <section class="sound-panel" aria-label="음향">
+            <div class="sound-toggle-row">
+              <label for="soundEnabledInput">음향</label>
+              <input id="soundEnabledInput" type="checkbox" checked />
+            </div>
+            <label class="sound-slider" for="sfxVolumeInput">
+              <span>효과음</span>
+              <input id="sfxVolumeInput" type="range" min="0" max="100" value="72" />
+            </label>
+            <label class="sound-slider" for="bgmVolumeInput">
+              <span>BGM</span>
+              <input id="bgmVolumeInput" type="range" min="0" max="100" value="30" />
+            </label>
+          </section>
+
+          <section id="chaosPanel" class="chaos-panel" aria-label="카오스 카드" hidden>
+            <div class="panel-heading">
+              <h2>카오스 카드</h2>
+              <span id="chaosTierValue">티어 매칭</span>
+            </div>
+            <div id="chaosLoadouts" class="chaos-loadouts"></div>
           </section>
 
           <section class="control-panel" aria-label="게임 메뉴">

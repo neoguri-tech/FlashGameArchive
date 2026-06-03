@@ -198,11 +198,736 @@ a {
     #26845d;
 }
 
+.cell.power-target {
+  cursor: crosshair;
+  background:
+    radial-gradient(circle at 50% 50%, rgba(108, 167, 255, 0.2), transparent 48%),
+    linear-gradient(135deg, rgba(255, 255, 255, 0.12), transparent 60%),
+    #26715a;
+}
+
+.cell.power-target::after {
+  content: "";
+  width: 52%;
+  height: 52%;
+  border: 2px solid rgba(108, 167, 255, 0.92);
+  border-radius: 8px;
+  background: rgba(108, 167, 255, 0.14);
+  box-shadow: 0 0 18px rgba(108, 167, 255, 0.36);
+}
+
 .cell.blocked {
   border-color: rgba(0, 0, 0, 0.38);
   background:
     repeating-linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0 5px, transparent 5px 10px),
     #26313a;
+}
+
+.cell.effect-cell {
+  --effect-rgb: 240, 207, 99;
+  --effect-ink: #15110a;
+  animation: effectCellPulse 760ms ease both;
+}
+
+.cell.effect-blast,
+.cell.effect-comeback,
+.cell.effect-frenzy {
+  --effect-rgb: 237, 112, 100;
+  --effect-ink: #1d0d0a;
+  background:
+    radial-gradient(circle at 50% 50%, rgba(var(--effect-rgb), 0.38), transparent 58%),
+    linear-gradient(135deg, rgba(255, 255, 255, 0.1), transparent 60%),
+    #7e342c;
+}
+
+.cell.effect-convert,
+.cell.effect-eclipse,
+.cell.effect-magnet {
+  --effect-rgb: 113, 219, 230;
+  --effect-ink: #071617;
+  background:
+    radial-gradient(circle at 50% 50%, rgba(var(--effect-rgb), 0.34), transparent 58%),
+    linear-gradient(135deg, rgba(255, 255, 255, 0.1), transparent 60%),
+    #216f6f;
+}
+
+.cell.effect-jackpot,
+.cell.effect-auction,
+.cell.effect-contract,
+.cell.effect-destiny {
+  --effect-rgb: 240, 207, 99;
+  --effect-ink: #15110a;
+  background:
+    radial-gradient(circle at 50% 50%, rgba(var(--effect-rgb), 0.34), transparent 58%),
+    linear-gradient(135deg, rgba(255, 255, 255, 0.12), transparent 60%),
+    #75672a;
+}
+
+.cell.effect-ban,
+.cell.effect-hole,
+.cell.effect-void,
+.cell.effect-swap,
+.cell.effect-shield {
+  --effect-rgb: 180, 139, 255;
+  --effect-ink: #120d20;
+  background:
+    radial-gradient(circle at 50% 50%, rgba(var(--effect-rgb), 0.38), transparent 58%),
+    linear-gradient(135deg, rgba(255, 255, 255, 0.08), transparent 60%),
+    #3b315d;
+}
+
+.cell.effect-infection,
+.cell.effect-mark,
+.cell.effect-chain {
+  --effect-rgb: 64, 173, 119;
+  --effect-ink: #07140d;
+  background:
+    radial-gradient(circle at 50% 50%, rgba(var(--effect-rgb), 0.34), transparent 58%),
+    linear-gradient(135deg, rgba(255, 255, 255, 0.1), transparent 60%),
+    #286d4c;
+}
+
+.cell.effect-wave {
+  --effect-rgb: 113, 219, 230;
+  --effect-ink: #071617;
+  background:
+    linear-gradient(135deg, transparent 0 36%, rgba(var(--effect-rgb), 0.3) 37% 43%, transparent 44%),
+    radial-gradient(circle at 42% 55%, rgba(var(--effect-rgb), 0.34), transparent 64%),
+    #1f6570;
+}
+
+.cell.effect-gravity {
+  --effect-rgb: 180, 139, 255;
+  --effect-ink: #120d20;
+  background:
+    radial-gradient(circle, rgba(7, 6, 14, 0.9) 0 22%, rgba(var(--effect-rgb), 0.38) 23% 38%, transparent 42%),
+    repeating-conic-gradient(from 0deg, rgba(var(--effect-rgb), 0.34) 0 9deg, transparent 9deg 21deg),
+    #2e2452;
+}
+
+.cell.effect-supernova,
+.cell.effect-throne,
+.cell.effect-jackpot {
+  --effect-rgb: 240, 207, 99;
+  --effect-ink: #15110a;
+}
+
+.cell.effect-lottery,
+.cell.effect-destiny_move {
+  --effect-rgb: 180, 139, 255;
+  --effect-ink: #120d20;
+}
+
+.cell.effect-seizure,
+.cell.effect-magnet {
+  --effect-rgb: 113, 219, 230;
+  --effect-ink: #071617;
+}
+
+.cell.effect-king_bomb,
+.cell.effect-infectious_bomb {
+  --effect-rgb: 237, 112, 100;
+  --effect-ink: #1d0d0a;
+}
+
+.cell.effect-domino {
+  --effect-rgb: 64, 173, 119;
+  --effect-ink: #07140d;
+}
+
+.cell.effect-mirror_stone,
+.cell.effect-assassin_stone,
+.cell.effect-vampire_stone {
+  --effect-rgb: 180, 139, 255;
+  --effect-ink: #120d20;
+}
+
+.cell.effect-laser_stone {
+  --effect-rgb: 113, 219, 230;
+  --effect-ink: #071617;
+}
+
+.cell.effect-split_stone {
+  --effect-rgb: 64, 173, 119;
+  --effect-ink: #07140d;
+}
+
+.effect-visual {
+  position: absolute;
+  inset: -8%;
+  border-radius: 7px;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 1;
+  mix-blend-mode: screen;
+  background:
+    radial-gradient(circle, rgba(255, 255, 255, 0.92) 0 8%, rgba(var(--effect-rgb), 0.72) 10% 34%, transparent 38%),
+    repeating-conic-gradient(from 0deg, rgba(var(--effect-rgb), 0.86) 0 10deg, transparent 10deg 22deg);
+  filter: saturate(1.25) drop-shadow(0 0 18px rgba(var(--effect-rgb), 0.72));
+  animation: effectVisualBloom 1050ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.effect-visual::before,
+.effect-visual::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+}
+
+.cell.effect-blast .effect-visual,
+.cell.effect-comeback .effect-visual,
+.cell.effect-frenzy .effect-visual {
+  inset: -2%;
+  border-radius: 50%;
+  background:
+    conic-gradient(from 14deg, transparent 0 7%, rgba(var(--effect-rgb), 0.95) 8% 12%, transparent 13% 20%),
+    radial-gradient(circle, rgba(255, 255, 255, 0.88) 0 8%, rgba(var(--effect-rgb), 0.5) 10% 30%, transparent 34%);
+  filter: drop-shadow(0 0 16px rgba(var(--effect-rgb), 0.72));
+  animation: effectBurst 760ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.cell.effect-frenzy .effect-visual::before {
+  inset: 18%;
+  border-radius: 8px 22px 8px 22px;
+  border: 3px solid rgba(255, 255, 255, 0.76);
+  transform: skewX(-16deg) rotate(-18deg);
+}
+
+.cell.effect-comeback .effect-visual::before {
+  inset: 18%;
+  border: 4px solid rgba(255, 255, 255, 0.78);
+  border-top-color: transparent;
+  border-radius: 50%;
+  transform: rotate(-35deg);
+}
+
+.cell.effect-convert .effect-visual,
+.cell.effect-eclipse .effect-visual,
+.cell.effect-magnet .effect-visual {
+  border-radius: 50%;
+  background:
+    radial-gradient(circle, rgba(255, 255, 255, 0.78) 0 7%, transparent 9%),
+    radial-gradient(circle, transparent 0 42%, rgba(var(--effect-rgb), 0.94) 44% 49%, transparent 51%),
+    radial-gradient(circle, rgba(var(--effect-rgb), 0.42), transparent 68%);
+  filter: drop-shadow(0 0 14px rgba(var(--effect-rgb), 0.62));
+}
+
+.cell.effect-eclipse .effect-visual::before {
+  inset: 14%;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 64% 42%, rgba(10, 12, 18, 0.96) 0 31%, transparent 33%),
+    radial-gradient(circle, rgba(var(--effect-rgb), 0.86) 0 47%, transparent 49%);
+  animation: effectSlowSpin 1400ms linear infinite;
+}
+
+.cell.effect-magnet .effect-visual::before {
+  inset: 14% 20%;
+  border: 6px solid rgba(var(--effect-rgb), 0.94);
+  border-top: 0;
+  border-radius: 0 0 22px 22px;
+  box-shadow:
+    -12px 0 0 -8px rgba(255, 255, 255, 0.8),
+    12px 0 0 -8px rgba(255, 255, 255, 0.8);
+}
+
+.cell.effect-jackpot .effect-visual,
+.cell.effect-auction .effect-visual,
+.cell.effect-contract .effect-visual,
+.cell.effect-destiny .effect-visual {
+  border-radius: 50%;
+  background:
+    radial-gradient(circle, rgba(255, 255, 255, 0.9) 0 6%, rgba(var(--effect-rgb), 0.82) 8% 18%, transparent 20%),
+    repeating-conic-gradient(from 0deg, rgba(var(--effect-rgb), 0.86) 0 12deg, transparent 12deg 24deg);
+  filter: drop-shadow(0 0 15px rgba(var(--effect-rgb), 0.7));
+}
+
+.cell.effect-jackpot .effect-visual::before {
+  inset: 22% 11%;
+  border-top: 5px solid rgba(255, 255, 255, 0.82);
+  border-bottom: 5px solid rgba(255, 255, 255, 0.82);
+  border-radius: 6px;
+  background:
+    radial-gradient(circle at 18% 50%, rgba(255, 255, 255, 0.92) 0 9%, transparent 11%),
+    radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.92) 0 9%, transparent 11%),
+    radial-gradient(circle at 82% 50%, rgba(255, 255, 255, 0.92) 0 9%, transparent 11%);
+}
+
+.cell.effect-auction .effect-visual::before {
+  inset: 18%;
+  border-radius: 50% 50% 7px 7px;
+  border: 4px solid rgba(255, 255, 255, 0.82);
+  border-bottom-width: 10px;
+  transform: rotate(-16deg);
+}
+
+.cell.effect-contract .effect-visual::before {
+  inset: 18%;
+  border: 4px solid rgba(255, 255, 255, 0.8);
+  border-bottom-width: 11px;
+  border-radius: 4px;
+}
+
+.cell.effect-destiny .effect-visual::before {
+  inset: 16%;
+  border: 3px solid rgba(255, 255, 255, 0.76);
+  border-radius: 50%;
+  background:
+    linear-gradient(90deg, transparent 46%, rgba(255, 255, 255, 0.86) 47% 53%, transparent 54%),
+    linear-gradient(0deg, transparent 46%, rgba(255, 255, 255, 0.86) 47% 53%, transparent 54%);
+  animation: effectSlowSpin 1800ms linear infinite;
+}
+
+.cell.effect-ban .effect-visual,
+.cell.effect-hole .effect-visual,
+.cell.effect-void .effect-visual,
+.cell.effect-swap .effect-visual,
+.cell.effect-shield .effect-visual {
+  border-radius: 50%;
+  filter: drop-shadow(0 0 16px rgba(var(--effect-rgb), 0.66));
+}
+
+.cell.effect-hole .effect-visual,
+.cell.effect-void .effect-visual {
+  inset: -11%;
+  background:
+    radial-gradient(circle, #030207 0 22%, rgba(3, 2, 7, 0.92) 24% 32%, transparent 34%),
+    repeating-conic-gradient(from 0deg, rgba(25, 20, 48, 0.98) 0 12deg, rgba(var(--effect-rgb), 0.9) 12deg 19deg, transparent 19deg 28deg),
+    radial-gradient(circle, rgba(var(--effect-rgb), 0.48), transparent 70%);
+  animation: effectBlackHole 2800ms linear infinite;
+}
+
+.cell.effect-void .effect-visual::after {
+  inset: 24%;
+  border: 3px solid rgba(255, 255, 255, 0.72);
+  border-top-color: transparent;
+  border-bottom-color: transparent;
+  border-radius: 50%;
+}
+
+.cell.effect-ban .effect-visual {
+  background:
+    radial-gradient(circle, rgba(var(--effect-rgb), 0.38), transparent 62%),
+    linear-gradient(45deg, transparent 42%, rgba(255, 255, 255, 0.88) 43% 57%, transparent 58%);
+}
+
+.cell.effect-ban .effect-visual::before {
+  inset: 18%;
+  border: 5px solid rgba(var(--effect-rgb), 0.92);
+  border-radius: 50%;
+}
+
+.cell.effect-shield .effect-visual {
+  inset: 3%;
+  border-radius: 9px;
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.72), transparent 42%),
+    radial-gradient(circle, rgba(var(--effect-rgb), 0.32), transparent 62%);
+}
+
+.cell.effect-shield .effect-visual::before {
+  inset: 14% 18%;
+  border: 4px solid rgba(255, 255, 255, 0.76);
+  border-radius: 50% 50% 46% 46%;
+  clip-path: polygon(50% 0, 100% 20%, 86% 78%, 50% 100%, 14% 78%, 0 20%);
+}
+
+.cell.effect-swap .effect-visual {
+  background:
+    radial-gradient(circle, rgba(var(--effect-rgb), 0.34), transparent 62%),
+    conic-gradient(from 90deg, transparent 0 18%, rgba(255, 255, 255, 0.8) 18% 24%, transparent 24% 50%, rgba(255, 255, 255, 0.8) 50% 56%, transparent 56%);
+  animation: effectSwapSpin 900ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.cell.effect-infection .effect-visual,
+.cell.effect-mark .effect-visual,
+.cell.effect-chain .effect-visual {
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 50% 26%, rgba(255, 255, 255, 0.9) 0 7%, transparent 9%),
+    radial-gradient(circle at 25% 72%, rgba(255, 255, 255, 0.9) 0 7%, transparent 9%),
+    radial-gradient(circle at 75% 72%, rgba(255, 255, 255, 0.9) 0 7%, transparent 9%),
+    linear-gradient(32deg, transparent 46%, rgba(var(--effect-rgb), 0.9) 47% 53%, transparent 54%),
+    linear-gradient(-32deg, transparent 46%, rgba(var(--effect-rgb), 0.9) 47% 53%, transparent 54%),
+    radial-gradient(circle, rgba(var(--effect-rgb), 0.42), transparent 66%);
+  filter: drop-shadow(0 0 14px rgba(var(--effect-rgb), 0.6));
+}
+
+.cell.effect-chain .effect-visual::before {
+  inset: 18%;
+  border: 4px dashed rgba(255, 255, 255, 0.78);
+  border-radius: 10px;
+  transform: rotate(-18deg);
+}
+
+.cell.effect-mark .effect-visual::before {
+  inset: 18%;
+  border-radius: 50%;
+  background:
+    linear-gradient(90deg, transparent 45%, rgba(255, 255, 255, 0.82) 46% 54%, transparent 55%),
+    linear-gradient(0deg, transparent 45%, rgba(255, 255, 255, 0.82) 46% 54%, transparent 55%);
+}
+
+.cell.effect-source-supernova .effect-visual,
+.cell.effect-supernova .effect-visual {
+  inset: -26%;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle, rgba(255, 255, 255, 0.96) 0 8%, rgba(255, 233, 145, 0.94) 10% 20%, transparent 22%),
+    conic-gradient(from 0deg, transparent 0 5%, rgba(255, 244, 190, 0.98) 6% 10%, transparent 11% 16%, rgba(237, 112, 100, 0.9) 17% 21%, transparent 22% 28%),
+    radial-gradient(circle, rgba(240, 207, 99, 0.76), transparent 66%);
+  filter: saturate(1.45) drop-shadow(0 0 26px rgba(240, 207, 99, 0.92));
+  animation: effectSupernovaPop 980ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.cell.effect-source-king_bomb .effect-visual,
+.cell.effect-king_bomb .effect-visual {
+  inset: -22%;
+  border-radius: 50%;
+  background:
+    radial-gradient(ellipse at 50% 31%, rgba(255, 244, 190, 0.96) 0 10%, rgba(237, 112, 100, 0.92) 11% 30%, transparent 32%),
+    radial-gradient(ellipse at 50% 68%, rgba(255, 244, 190, 0.88) 0 8%, rgba(240, 155, 93, 0.78) 9% 19%, transparent 21%),
+    radial-gradient(circle, rgba(237, 112, 100, 0.58) 0 22%, transparent 24%),
+    repeating-conic-gradient(from 0deg, rgba(237, 112, 100, 0.9) 0 7deg, transparent 7deg 18deg);
+  filter: drop-shadow(0 0 24px rgba(237, 112, 100, 0.88));
+  animation: effectCrossDetonate 880ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.cell.effect-source-black_hole .effect-visual {
+  inset: -31%;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle, #010106 0 18%, rgba(2, 2, 9, 0.98) 19% 31%, transparent 33%),
+    repeating-conic-gradient(from 0deg, rgba(2, 2, 8, 1) 0 8deg, rgba(108, 167, 255, 0.98) 8deg 14deg, rgba(180, 139, 255, 0.72) 14deg 19deg, transparent 19deg 28deg),
+    radial-gradient(circle, rgba(108, 167, 255, 0.74), transparent 68%);
+  filter: saturate(1.35) drop-shadow(0 0 30px rgba(108, 167, 255, 0.88));
+  animation: effectBlackHole 2800ms linear infinite;
+}
+
+.cell.effect-source-final_auction .effect-visual {
+  inset: -16%;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 50% 65%, rgba(255, 255, 255, 0.88) 0 6%, transparent 8%),
+    linear-gradient(28deg, transparent 34%, rgba(255, 255, 255, 0.92) 36% 45%, transparent 47%),
+    radial-gradient(circle, rgba(240, 207, 99, 0.82), transparent 64%),
+    repeating-conic-gradient(from 10deg, rgba(240, 207, 99, 0.86) 0 8deg, transparent 8deg 21deg);
+  animation: effectAuctionHammer 940ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.cell.effect-source-lottery .effect-visual,
+.cell.effect-lottery .effect-visual {
+  inset: -18%;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 24% 28%, rgba(255, 255, 255, 0.95) 0 5%, transparent 7%),
+    radial-gradient(circle at 72% 34%, rgba(255, 255, 255, 0.95) 0 5%, transparent 7%),
+    radial-gradient(circle at 52% 76%, rgba(255, 255, 255, 0.95) 0 5%, transparent 7%),
+    conic-gradient(from 0deg, #f0cf63, #71dbe6, #b48bff, #ed7064, #f0cf63);
+  filter: saturate(1.55) drop-shadow(0 0 24px rgba(180, 139, 255, 0.9));
+  animation: effectLotteryJackpot 900ms steps(5, end) both;
+}
+
+.cell.effect-source-throne .effect-visual,
+.cell.effect-throne .effect-visual {
+  inset: -18%;
+  border-radius: 50%;
+  background:
+    linear-gradient(0deg, transparent 46%, rgba(255, 255, 255, 0.86) 48% 54%, transparent 56%),
+    radial-gradient(circle, rgba(240, 207, 99, 0.86) 0 16%, transparent 18%),
+    repeating-conic-gradient(from 0deg, rgba(240, 207, 99, 0.9) 0 9deg, transparent 9deg 24deg);
+  animation: effectRoyalDrop 1020ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.cell.effect-source-seizure .effect-visual,
+.cell.effect-seizure .effect-visual {
+  inset: -12%;
+  border-radius: 10px;
+  background:
+    linear-gradient(90deg, transparent 0 14%, rgba(255, 255, 255, 0.85) 15% 23%, transparent 24% 76%, rgba(255, 255, 255, 0.85) 77% 85%, transparent 86%),
+    linear-gradient(0deg, transparent 42%, rgba(113, 219, 230, 0.9) 44% 56%, transparent 58%),
+    radial-gradient(circle, rgba(113, 219, 230, 0.58), transparent 68%);
+  animation: effectClampSnap 720ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.cell.effect-source-domino .effect-visual,
+.cell.effect-domino .effect-visual {
+  inset: -12%;
+  border-radius: 8px;
+  background:
+    linear-gradient(62deg, transparent 0 28%, rgba(255, 255, 255, 0.9) 29% 35%, transparent 36% 45%, rgba(64, 173, 119, 0.9) 46% 54%, transparent 55%),
+    radial-gradient(circle at 28% 30%, rgba(255, 255, 255, 0.9) 0 5%, transparent 7%),
+    radial-gradient(circle at 70% 68%, rgba(255, 255, 255, 0.9) 0 5%, transparent 7%),
+    radial-gradient(circle, rgba(64, 173, 119, 0.58), transparent 68%);
+  animation: effectDominoCascade 840ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.cell.effect-source-infectious_bomb .effect-visual,
+.cell.effect-infectious_bomb .effect-visual {
+  inset: -36%;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle, rgba(237, 112, 100, 0.98) 0 9%, transparent 11%),
+    conic-gradient(from 30deg, transparent 0 8%, rgba(95, 235, 142, 0.98) 9% 22%, transparent 23% 34%, rgba(95, 235, 142, 0.98) 35% 48%, transparent 49% 60%, rgba(95, 235, 142, 0.98) 61% 74%, transparent 75%),
+    radial-gradient(circle, rgba(64, 173, 119, 0.72) 0 30%, transparent 32%),
+    repeating-conic-gradient(from 0deg, rgba(237, 112, 100, 0.82) 0 5deg, transparent 5deg 15deg);
+  filter:
+    saturate(1.7)
+    drop-shadow(0 0 26px rgba(64, 173, 119, 0.92))
+    drop-shadow(0 0 18px rgba(237, 112, 100, 0.72));
+  animation: effectInfectionBloom 920ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.cell.effect-source-infectious_bomb .effect-visual::before,
+.cell.effect-infectious_bomb .effect-visual::before {
+  inset: 17%;
+  border: 5px solid rgba(95, 235, 142, 0.9);
+  border-top-color: rgba(237, 112, 100, 0.94);
+  border-bottom-color: rgba(237, 112, 100, 0.94);
+  border-radius: 50%;
+  box-shadow:
+    0 0 0 8px rgba(64, 173, 119, 0.12),
+    0 0 28px rgba(64, 173, 119, 0.58);
+}
+
+.cell.effect-source-infectious_bomb .effect-visual::after,
+.cell.effect-infectious_bomb .effect-visual::after {
+  inset: -7%;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 50% 0, rgba(255, 255, 255, 0.95) 0 4%, transparent 6%),
+    radial-gradient(circle at 4% 79%, rgba(255, 255, 255, 0.9) 0 4%, transparent 6%),
+    radial-gradient(circle at 96% 79%, rgba(255, 255, 255, 0.9) 0 4%, transparent 6%),
+    linear-gradient(31deg, transparent 47%, rgba(237, 112, 100, 0.92) 48% 52%, transparent 53%),
+    linear-gradient(-31deg, transparent 47%, rgba(237, 112, 100, 0.92) 48% 52%, transparent 53%);
+  animation: effectToxicTendrils 760ms ease-out both;
+}
+
+.cell.effect-source-jackpot .effect-visual {
+  inset: -17%;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 19% 50%, rgba(255, 255, 255, 0.96) 0 6%, transparent 8%),
+    radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.96) 0 6%, transparent 8%),
+    radial-gradient(circle at 81% 50%, rgba(255, 255, 255, 0.96) 0 6%, transparent 8%),
+    repeating-conic-gradient(from 0deg, rgba(240, 207, 99, 0.95) 0 9deg, rgba(240, 155, 93, 0.86) 9deg 16deg, transparent 16deg 26deg);
+  animation: effectJackpotBurst 980ms steps(4, end) both;
+}
+
+.cell.effect-source-magnet .effect-visual {
+  inset: -17%;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle, rgba(255, 255, 255, 0.8) 0 6%, transparent 8%),
+    repeating-radial-gradient(circle, transparent 0 18%, rgba(113, 219, 230, 0.72) 19% 23%, transparent 24% 30%),
+    linear-gradient(90deg, transparent 32%, rgba(113, 219, 230, 0.82) 36% 42%, transparent 46% 54%, rgba(113, 219, 230, 0.82) 58% 64%, transparent 68%);
+  animation: effectMagnetPulse 960ms ease-in-out both;
+}
+
+.cell.effect-source-board_flip .effect-visual {
+  inset: -14%;
+  border-radius: 50%;
+  background:
+    conic-gradient(from 0deg, transparent 0 18%, rgba(255, 255, 255, 0.88) 18% 25%, transparent 25% 50%, rgba(240, 207, 99, 0.9) 50% 58%, transparent 58%),
+    radial-gradient(circle, rgba(240, 155, 93, 0.7), transparent 66%);
+  animation: effectBoardFlipSpin 780ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.cell.effect-source-eclipse_3x3 .effect-visual {
+  inset: -15%;
+  background:
+    radial-gradient(circle at 64% 42%, rgba(8, 10, 16, 0.98) 0 27%, transparent 29%),
+    radial-gradient(circle, rgba(180, 139, 255, 0.92) 0 46%, transparent 48%),
+    repeating-conic-gradient(from 0deg, rgba(113, 219, 230, 0.72) 0 7deg, transparent 7deg 20deg);
+  animation: effectEclipseDrop 980ms ease-in-out both;
+}
+
+.cell.effect-source-destiny_move .effect-visual {
+  inset: -18%;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle, rgba(255, 255, 255, 0.94) 0 6%, rgba(180, 139, 255, 0.9) 7% 12%, transparent 14%),
+    repeating-conic-gradient(from 0deg, rgba(180, 139, 255, 0.94) 0 6deg, transparent 6deg 21deg),
+    radial-gradient(circle, rgba(180, 139, 255, 0.6), transparent 68%);
+  animation: effectDestinySeal 1100ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.cell.effect-source-ownership_frenzy .effect-visual {
+  inset: -22%;
+  border-radius: 50%;
+  background:
+    linear-gradient(30deg, transparent 38%, rgba(255, 255, 255, 0.9) 40% 48%, transparent 50%),
+    linear-gradient(-30deg, transparent 38%, rgba(237, 112, 100, 0.96) 40% 48%, transparent 50%),
+    conic-gradient(from 8deg, transparent 0 8%, rgba(237, 112, 100, 0.9) 9% 15%, transparent 16% 27%),
+    radial-gradient(circle, rgba(237, 112, 100, 0.68), transparent 66%);
+  animation: effectFrenzyClaw 780ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.cell.effect-source-comeback_swing .effect-visual {
+  inset: -18%;
+  border-radius: 50%;
+  background:
+    conic-gradient(from 220deg, transparent 0 58%, rgba(255, 255, 255, 0.92) 59% 66%, rgba(64, 173, 119, 0.94) 67% 78%, transparent 79%),
+    radial-gradient(circle, rgba(64, 173, 119, 0.72), transparent 66%);
+  animation: effectComebackWhip 920ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.cell.effect-source-move_ban .effect-visual {
+  inset: -13%;
+  border-radius: 12px;
+  background:
+    linear-gradient(45deg, transparent 40%, rgba(255, 255, 255, 0.9) 42% 56%, transparent 58%),
+    radial-gradient(circle, rgba(237, 112, 100, 0.72), transparent 66%),
+    repeating-conic-gradient(from 0deg, rgba(237, 112, 100, 0.8) 0 8deg, transparent 8deg 22deg);
+  animation: effectBanStamp 820ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.cell.effect-source-move_ban .effect-visual::before {
+  inset: 20% 24%;
+  border: 5px solid rgba(255, 255, 255, 0.88);
+  border-top-width: 12px;
+  border-radius: 9px;
+}
+
+.cell.effect-source-corner_contract .effect-visual {
+  inset: -15%;
+  border-radius: 8px;
+  background:
+    linear-gradient(135deg, transparent 0 25%, rgba(255, 255, 255, 0.82) 26% 34%, transparent 35%),
+    radial-gradient(circle at 74% 26%, rgba(237, 112, 100, 0.9) 0 8%, transparent 10%),
+    radial-gradient(circle, rgba(240, 207, 99, 0.76), transparent 68%);
+  animation: effectContractSeal 900ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.cell.effect-source-chain_lightning .effect-visual {
+  inset: -22%;
+  border-radius: 50%;
+  background:
+    linear-gradient(116deg, transparent 0 34%, rgba(255, 255, 255, 0.96) 35% 42%, rgba(113, 219, 230, 0.96) 43% 50%, transparent 51%),
+    linear-gradient(42deg, transparent 0 48%, rgba(113, 219, 230, 0.88) 49% 56%, transparent 57%),
+    repeating-conic-gradient(from 0deg, rgba(113, 219, 230, 0.86) 0 5deg, transparent 5deg 17deg),
+    radial-gradient(circle, rgba(113, 219, 230, 0.68), transparent 68%);
+  filter: drop-shadow(0 0 22px rgba(113, 219, 230, 0.88));
+  animation: effectBurst 760ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.cell.effect-source-edge_surge .effect-visual,
+.cell.effect-source-tidal_wave .effect-visual {
+  inset: -20%;
+  border-radius: 50%;
+  background:
+    linear-gradient(0deg, transparent 0 34%, rgba(255, 255, 255, 0.92) 35% 42%, transparent 43%),
+    repeating-radial-gradient(ellipse at 50% 80%, transparent 0 13%, rgba(113, 219, 230, 0.82) 14% 19%, transparent 20% 28%),
+    radial-gradient(circle, rgba(108, 167, 255, 0.74), transparent 70%);
+  filter: drop-shadow(0 0 22px rgba(113, 219, 230, 0.78));
+  animation: effectComebackWhip 920ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.cell.effect-source-gravity_crush .effect-visual,
+.cell.effect-source-mirror_stone .effect-visual {
+  inset: -24%;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle, rgba(255, 255, 255, 0.92) 0 6%, transparent 8%),
+    repeating-conic-gradient(from 0deg, rgba(180, 139, 255, 0.92) 0 8deg, transparent 8deg 22deg),
+    radial-gradient(circle, rgba(180, 139, 255, 0.68), transparent 68%);
+  filter: drop-shadow(0 0 24px rgba(180, 139, 255, 0.82));
+  animation: effectDestinySeal 1020ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.cell.effect-source-laser_stone .effect-visual {
+  inset: -18%;
+  border-radius: 8px;
+  background:
+    linear-gradient(90deg, transparent 0 12%, rgba(255, 255, 255, 0.96) 13% 18%, rgba(113, 219, 230, 0.94) 19% 28%, transparent 29%),
+    linear-gradient(45deg, transparent 0 40%, rgba(113, 219, 230, 0.9) 41% 50%, transparent 51%),
+    radial-gradient(circle, rgba(113, 219, 230, 0.62), transparent 66%);
+  filter: drop-shadow(0 0 22px rgba(113, 219, 230, 0.86));
+  animation: effectBanStamp 700ms ease-out both;
+}
+
+.cell.effect-source-assassin_stone .effect-visual {
+  inset: -15%;
+  border-radius: 50%;
+  background:
+    linear-gradient(135deg, transparent 0 42%, rgba(255, 255, 255, 0.94) 43% 49%, rgba(237, 112, 100, 0.94) 50% 57%, transparent 58%),
+    radial-gradient(circle at 62% 38%, rgba(237, 112, 100, 0.95) 0 8%, transparent 10%),
+    radial-gradient(circle, rgba(237, 112, 100, 0.64), transparent 66%);
+  animation: effectBanStamp 720ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.cell.effect-source-split_stone .effect-visual {
+  inset: -18%;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.94) 0 8%, transparent 10%),
+    radial-gradient(circle at 70% 30%, rgba(64, 173, 119, 0.95) 0 9%, transparent 11%),
+    radial-gradient(circle at 50% 72%, rgba(64, 173, 119, 0.9) 0 10%, transparent 12%),
+    radial-gradient(circle, rgba(64, 173, 119, 0.62), transparent 66%);
+  animation: effectJackpotBurst 820ms steps(3, end) both;
+}
+
+.cell.effect-source-vampire_stone .effect-visual {
+  inset: -20%;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 50% 40%, rgba(255, 255, 255, 0.9) 0 6%, transparent 8%),
+    conic-gradient(from 180deg, transparent 0 18%, rgba(237, 112, 100, 0.94) 19% 36%, transparent 37% 56%, rgba(237, 112, 100, 0.82) 57% 72%, transparent 73%),
+    radial-gradient(circle, rgba(237, 112, 100, 0.66), transparent 68%);
+  filter: drop-shadow(0 0 22px rgba(237, 112, 100, 0.82));
+  animation: effectFrenzyClaw 860ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.effect-badge {
+  position: absolute;
+  right: 5%;
+  bottom: 5%;
+  min-width: 38%;
+  max-width: 86%;
+  min-height: 20%;
+  padding: 2px 5px;
+  border: 1px solid rgba(var(--effect-rgb), 0.8);
+  border-radius: 6px;
+  background: rgba(var(--effect-rgb), 0.88);
+  color: var(--effect-ink);
+  display: grid;
+  place-items: center;
+  font-size: clamp(9px, 1.5vw, 13px);
+  font-weight: 950;
+  line-height: 1;
+  pointer-events: none;
+  z-index: 5;
+  box-shadow: 0 0 16px rgba(var(--effect-rgb), 0.38);
+  animation: effectBadgeIn 540ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.cell.contract-cell::after {
+  content: attr(data-contract-owner);
+  width: 46%;
+  height: 46%;
+  border: 2px solid rgba(240, 207, 99, 0.88);
+  border-radius: 4px 4px 8px 4px;
+  background:
+    linear-gradient(135deg, rgba(240, 207, 99, 0.86), rgba(240, 155, 93, 0.76));
+  color: #15110a;
+  display: grid;
+  place-items: center;
+  font-size: clamp(10px, 1.8vw, 16px);
+  font-weight: 950;
+  box-shadow: 0 0 18px rgba(240, 207, 99, 0.34);
+}
+
+.cell.auction-cell::after {
+  content: "";
+  width: 54%;
+  height: 54%;
+  border: 2px solid rgba(240, 207, 99, 0.9);
+  border-radius: 50%;
+  background:
+    radial-gradient(circle, rgba(240, 207, 99, 0.72) 0 22%, transparent 24%),
+    rgba(240, 207, 99, 0.14);
+  box-shadow: 0 0 20px rgba(240, 207, 99, 0.32);
 }
 
 .cell.last-move::before {
@@ -248,12 +973,1126 @@ a {
   background: radial-gradient(circle at 34% 28%, #ffffff, #e4ddcf 60%, #aaa194);
 }
 
+.piece.shielded {
+  box-shadow:
+    0 0 0 4px rgba(113, 219, 230, 0.34),
+    0 0 18px rgba(113, 219, 230, 0.42),
+    inset 0 3px 6px rgba(255, 255, 255, 0.2),
+    inset 0 -5px 8px rgba(0, 0, 0, 0.32),
+    0 7px 12px rgba(0, 0, 0, 0.26);
+}
+
 .piece.special {
+  --stone-rgb: 108, 167, 255;
+  display: grid;
+  place-items: center;
+  overflow: visible;
+  isolation: isolate;
   box-shadow:
     inset 0 3px 6px rgba(255, 255, 255, 0.2),
     inset 0 -5px 8px rgba(0, 0, 0, 0.32),
-    0 0 0 4px rgba(108, 167, 255, 0.18),
+    0 0 0 4px rgba(var(--stone-rgb), 0.2),
+    0 0 18px rgba(var(--stone-rgb), 0.18),
     0 7px 12px rgba(0, 0, 0, 0.26);
+}
+
+.piece.special.shielded {
+  box-shadow:
+    0 0 0 4px rgba(113, 219, 230, 0.34),
+    0 0 18px rgba(113, 219, 230, 0.42),
+    inset 0 3px 6px rgba(255, 255, 255, 0.2),
+    inset 0 -5px 8px rgba(0, 0, 0, 0.32),
+    0 0 0 7px rgba(108, 167, 255, 0.14),
+    0 7px 12px rgba(0, 0, 0, 0.26);
+}
+
+.piece.special::before {
+  content: "";
+  position: absolute;
+  inset: -8%;
+  border: 2px solid rgba(var(--stone-rgb), 0.78);
+  border-radius: 50%;
+  opacity: 0.92;
+  pointer-events: none;
+  box-shadow:
+    0 0 12px rgba(var(--stone-rgb), 0.24),
+    inset 0 0 12px rgba(var(--stone-rgb), 0.12);
+  animation: specialStoneAura 1800ms ease-in-out infinite;
+}
+
+.piece.special[data-accent="gold"]::before {
+  --stone-rgb: 240, 207, 99;
+}
+
+.piece.special[data-accent="red"]::before {
+  --stone-rgb: 237, 112, 100;
+}
+
+.piece.special[data-accent="green"]::before {
+  --stone-rgb: 64, 173, 119;
+}
+
+.piece.special[data-accent="violet"]::before {
+  --stone-rgb: 180, 139, 255;
+}
+
+.piece.special[data-accent="cyan"]::before {
+  --stone-rgb: 113, 219, 230;
+}
+
+.piece.special[data-accent="amber"]::before {
+  --stone-rgb: 240, 155, 93;
+}
+
+.piece.special[data-accent="gold"] {
+  --stone-rgb: 240, 207, 99;
+}
+
+.piece.special[data-accent="red"] {
+  --stone-rgb: 237, 112, 100;
+}
+
+.piece.special[data-accent="green"] {
+  --stone-rgb: 64, 173, 119;
+}
+
+.piece.special[data-accent="violet"] {
+  --stone-rgb: 180, 139, 255;
+}
+
+.piece.special[data-accent="cyan"] {
+  --stone-rgb: 113, 219, 230;
+}
+
+.piece.special[data-accent="amber"] {
+  --stone-rgb: 240, 155, 93;
+}
+
+.piece-glyph {
+  position: absolute;
+  inset: 16%;
+  color: rgb(var(--stone-rgb));
+  filter:
+    drop-shadow(0 0 7px rgba(var(--stone-rgb), 0.86))
+    drop-shadow(0 0 15px rgba(var(--stone-rgb), 0.34))
+    drop-shadow(0 2px 3px rgba(0, 0, 0, 0.42));
+  pointer-events: none;
+  z-index: 3;
+}
+
+.piece-aura {
+  position: absolute;
+  inset: -30%;
+  border-radius: 50%;
+  color: rgb(var(--stone-rgb));
+  opacity: 0.74;
+  pointer-events: none;
+  z-index: 0;
+  mix-blend-mode: normal;
+  filter:
+    saturate(1.3)
+    drop-shadow(0 0 14px rgba(var(--stone-rgb), 0.7));
+}
+
+.piece-aura::before,
+.piece-aura::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+}
+
+.piece-aura::before {
+  background:
+    radial-gradient(circle, rgba(255, 255, 255, 0.68) 0 5%, rgba(var(--stone-rgb), 0.52) 7% 22%, transparent 25%),
+    repeating-conic-gradient(from 0deg, rgba(var(--stone-rgb), 0.72) 0 8deg, transparent 8deg 20deg);
+  animation: stoneAuraPulse 1600ms ease-in-out infinite;
+}
+
+.piece-aura::after {
+  inset: 19%;
+  border: 2px solid rgba(var(--stone-rgb), 0.6);
+  box-shadow:
+    0 0 14px rgba(var(--stone-rgb), 0.45),
+    inset 0 0 14px rgba(var(--stone-rgb), 0.22);
+  animation: stoneAuraSpin 3200ms linear infinite;
+}
+
+.piece-owner-mark {
+  --owner-fill: #080a0d;
+  --owner-stroke: rgba(255, 255, 255, 0.78);
+  --owner-glow: rgba(0, 0, 0, 0.34);
+  position: absolute;
+  inset: 7%;
+  border-radius: 50%;
+  background: radial-gradient(circle at 34% 25%, rgba(255, 255, 255, 0.2), transparent 24%), var(--owner-fill);
+  border: 3px solid var(--owner-stroke);
+  box-shadow:
+    inset 0 2px 5px rgba(255, 255, 255, 0.14),
+    inset 0 -5px 8px rgba(0, 0, 0, 0.28),
+    0 0 0 3px rgba(var(--stone-rgb), 0.18),
+    0 0 16px var(--owner-glow);
+  pointer-events: none;
+  z-index: 2;
+}
+
+.piece-owner-mark::before,
+.piece-owner-mark::after {
+  content: "";
+  position: absolute;
+  pointer-events: none;
+}
+
+.piece-owner-mark::before {
+  inset: -12%;
+  border-radius: 50%;
+  border: 3px solid var(--owner-fill);
+  border-left-color: transparent;
+  border-bottom-color: transparent;
+  filter: drop-shadow(0 0 4px var(--owner-stroke));
+  transform: rotate(-24deg);
+}
+
+.piece-owner-mark::after {
+  right: -13%;
+  bottom: -12%;
+  width: 38%;
+  height: 38%;
+  border-radius: 50%;
+  background: var(--owner-fill);
+  border: 2px solid var(--owner-stroke);
+  box-shadow:
+    0 0 0 2px rgba(var(--stone-rgb), 0.22),
+    0 4px 8px rgba(0, 0, 0, 0.32);
+}
+
+.piece.white .piece-owner-mark {
+  --owner-fill: #f6efe2;
+  --owner-stroke: rgba(8, 10, 12, 0.82);
+  --owner-glow: rgba(255, 255, 255, 0.28);
+  background: radial-gradient(circle at 34% 25%, #ffffff, transparent 28%), var(--owner-fill);
+}
+
+.piece.white .piece-glyph {
+  filter:
+    drop-shadow(0 0 4px rgba(var(--stone-rgb), 0.5))
+    drop-shadow(0 1px 0 rgba(255, 255, 255, 0.46));
+}
+
+.piece-glyph::before,
+.piece-glyph::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+}
+
+.piece-glyph[data-glyph="star-core"] {
+  inset: 4%;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle, rgba(255, 255, 255, 0.94) 0 8%, rgba(240, 207, 99, 0.68) 9% 18%, transparent 20%),
+    repeating-conic-gradient(from 0deg, rgba(240, 207, 99, 0.34) 0 6deg, transparent 6deg 18deg);
+  opacity: 0.94;
+}
+
+.piece-glyph[data-glyph="star-core"]::before {
+  inset: 12%;
+  background: currentColor;
+  clip-path: polygon(
+    50% 0,
+    59% 31%,
+    86% 14%,
+    69% 41%,
+    100% 50%,
+    69% 59%,
+    86% 86%,
+    59% 69%,
+    50% 100%,
+    41% 69%,
+    14% 86%,
+    31% 59%,
+    0 50%,
+    31% 41%,
+    14% 14%,
+    41% 31%
+  );
+  filter: drop-shadow(0 0 10px rgba(240, 207, 99, 0.68));
+}
+
+.piece-glyph[data-glyph="star-core"]::after {
+  inset: -8%;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.56);
+  border-left-color: transparent;
+  border-right-color: transparent;
+  transform: rotate(18deg);
+}
+
+.piece-glyph[data-glyph="domino"] {
+  inset: 13% 24%;
+  border: 2px solid currentColor;
+  border-radius: 8px;
+  background:
+    radial-gradient(circle at 30% 27%, currentColor 0 7%, transparent 9%),
+    radial-gradient(circle at 70% 73%, currentColor 0 7%, transparent 9%),
+    linear-gradient(0deg, transparent 47%, currentColor 48% 52%, transparent 53%),
+    rgba(64, 173, 119, 0.08);
+  box-shadow:
+    -12px 10px 0 -4px rgba(95, 210, 144, 0.74),
+    12px -10px 0 -4px rgba(255, 255, 255, 0.62);
+  transform: rotate(-18deg);
+  animation: glyphDominoTip 1300ms ease-in-out infinite;
+}
+
+.piece-glyph[data-glyph="domino"]::before {
+  inset: -24% auto auto -34%;
+  width: 48%;
+  height: 64%;
+  border: 2px solid currentColor;
+  border-radius: 7px;
+  background:
+    radial-gradient(circle at 50% 28%, currentColor 0 8%, transparent 10%),
+    radial-gradient(circle at 50% 72%, currentColor 0 8%, transparent 10%),
+    rgba(64, 173, 119, 0.12);
+  opacity: 0.86;
+  transform: rotate(34deg);
+}
+
+.piece-glyph[data-glyph="domino"]::after {
+  inset: auto -34% -26% auto;
+  width: 48%;
+  height: 64%;
+  border: 2px solid currentColor;
+  border-radius: 7px;
+  background:
+    radial-gradient(circle at 50% 28%, currentColor 0 8%, transparent 10%),
+    radial-gradient(circle at 50% 72%, currentColor 0 8%, transparent 10%),
+    rgba(64, 173, 119, 0.12);
+  opacity: 0.82;
+  transform: rotate(34deg);
+}
+
+.piece-glyph[data-glyph="jackpot"] {
+  inset: 12% 9%;
+  border-radius: 9px;
+  background:
+    linear-gradient(180deg, currentColor 0 18%, transparent 19% 70%, currentColor 71% 100%),
+    linear-gradient(90deg, transparent 0 31%, rgba(255, 255, 255, 0.56) 32% 35%, transparent 36% 64%, rgba(255, 255, 255, 0.56) 65% 68%, transparent 69%),
+    rgba(240, 155, 93, 0.12);
+  box-shadow:
+    0 0 0 2px currentColor,
+    0 0 12px rgba(240, 155, 93, 0.34);
+}
+
+.piece-glyph[data-glyph="jackpot"]::before {
+  content: "777";
+  inset: 28% 8% 29%;
+  border-radius: 6px;
+  background: rgba(10, 13, 16, 0.62);
+  color: #fff4bd;
+  display: grid;
+  place-items: center;
+  font-size: 16px;
+  font-weight: 950;
+  letter-spacing: 0;
+  line-height: 1;
+  text-shadow:
+    0 0 5px rgba(240, 207, 99, 0.82),
+    0 1px 0 rgba(0, 0, 0, 0.5);
+}
+
+.piece-glyph[data-glyph="jackpot"]::after {
+  inset: auto -14% -16% auto;
+  width: 32%;
+  height: 32%;
+  border-radius: 50%;
+  border: 2px solid currentColor;
+  background:
+    radial-gradient(circle, currentColor 0 21%, transparent 23%),
+    radial-gradient(circle, rgba(255, 255, 255, 0.34), transparent 62%);
+}
+
+.piece-glyph[data-glyph="throne"] {
+  inset: 8% 10%;
+}
+
+.piece-glyph[data-glyph="throne"]::before {
+  inset: 0 0 auto;
+  height: 56%;
+  border: 0;
+  border-radius: 5px;
+  background:
+    radial-gradient(circle at 50% 15%, #fff4bd 0 7%, transparent 8%),
+    radial-gradient(circle at 18% 34%, #fff4bd 0 6%, transparent 7%),
+    radial-gradient(circle at 82% 34%, #fff4bd 0 6%, transparent 7%),
+    currentColor;
+  clip-path: polygon(0 94%, 0 38%, 22% 66%, 36% 12%, 50% 58%, 64% 12%, 78% 66%, 100% 38%, 100% 94%);
+  filter: drop-shadow(0 0 8px rgba(240, 207, 99, 0.62));
+}
+
+.piece-glyph[data-glyph="throne"]::after {
+  inset: auto 10% 5%;
+  height: 34%;
+  border-radius: 4px 4px 10px 10px;
+  background:
+    linear-gradient(90deg, transparent 0 14%, currentColor 15% 27%, transparent 28% 72%, currentColor 73% 85%, transparent 86%),
+    linear-gradient(0deg, currentColor 0 28%, transparent 29% 62%, currentColor 63% 100%);
+}
+
+.piece-glyph[data-glyph="magnet"] {
+  inset: 7% 12%;
+}
+
+.piece-glyph[data-glyph="magnet"]::before {
+  inset: 4% 12% 22%;
+  border: 7px solid currentColor;
+  border-top: 0;
+  border-radius: 0 0 21px 21px;
+  box-shadow:
+    inset 0 -4px 0 rgba(255, 255, 255, 0.28),
+    0 0 11px rgba(113, 219, 230, 0.48);
+}
+
+.piece-glyph[data-glyph="magnet"]::after {
+  inset: 0 10% auto;
+  height: 16px;
+  border-radius: 4px;
+  background:
+    linear-gradient(90deg, #ed7064 0 26%, transparent 27% 73%, #6ca7ff 74% 100%),
+    linear-gradient(0deg, rgba(255, 255, 255, 0.86), rgba(255, 255, 255, 0.86));
+  box-shadow:
+    0 28px 0 -6px rgba(255, 255, 255, 0.72),
+    0 39px 0 -8px rgba(255, 255, 255, 0.44);
+}
+
+.piece-glyph[data-glyph="clamp"] {
+  inset: 9% 14%;
+}
+
+.piece-glyph[data-glyph="clamp"]::before {
+  inset: 0 17% 42%;
+  border: 6px solid currentColor;
+  border-bottom: 0;
+  border-radius: 18px 18px 0 0;
+  box-shadow: 0 0 10px rgba(113, 219, 230, 0.42);
+}
+
+.piece-glyph[data-glyph="clamp"]::after {
+  inset: 42% 4% 4%;
+  border-radius: 7px;
+  background:
+    radial-gradient(circle at 50% 36%, rgba(8, 10, 13, 0.88) 0 8%, transparent 9%),
+    linear-gradient(90deg, transparent 45%, rgba(8, 10, 13, 0.78) 46% 54%, transparent 55%),
+    currentColor;
+  box-shadow:
+    -10px 0 0 -6px rgba(255, 255, 255, 0.72),
+    10px 0 0 -6px rgba(255, 255, 255, 0.72);
+}
+
+.piece-glyph[data-glyph="mushroom-cloud"] {
+  inset: 4% 8%;
+  border-radius: 50%;
+  background:
+    radial-gradient(ellipse at 50% 82%, rgba(255, 244, 190, 0.28) 0 20%, transparent 22%),
+    repeating-conic-gradient(from 0deg, rgba(237, 112, 100, 0.2) 0 7deg, transparent 7deg 22deg);
+}
+
+.piece-glyph[data-glyph="mushroom-cloud"]::before {
+  inset: 2% 0 auto;
+  height: 54%;
+  border-radius: 50% 50% 36% 36%;
+  background:
+    radial-gradient(circle at 20% 70%, currentColor 0 19%, transparent 20%),
+    radial-gradient(circle at 39% 44%, #fff4bd 0 11%, currentColor 12% 26%, transparent 27%),
+    radial-gradient(circle at 58% 43%, #fff4bd 0 10%, currentColor 11% 28%, transparent 29%),
+    radial-gradient(circle at 80% 70%, currentColor 0 19%, transparent 20%),
+    linear-gradient(0deg, currentColor, currentColor);
+  clip-path: polygon(4% 100%, 0 65%, 16% 38%, 34% 28%, 44% 5%, 58% 8%, 68% 28%, 86% 38%, 100% 66%, 96% 100%);
+  filter:
+    drop-shadow(0 0 8px rgba(237, 112, 100, 0.74))
+    drop-shadow(0 0 14px rgba(240, 207, 99, 0.34));
+}
+
+.piece-glyph[data-glyph="mushroom-cloud"]::after {
+  inset: 43% 31% 3%;
+  border-radius: 50% 50% 20px 20px;
+  background:
+    radial-gradient(ellipse at 50% 18%, rgba(255, 244, 190, 0.86) 0 18%, transparent 20%),
+    linear-gradient(90deg, transparent 0 14%, rgba(255, 244, 190, 0.52) 15% 29%, transparent 30% 70%, rgba(255, 244, 190, 0.42) 71% 85%, transparent 86%),
+    linear-gradient(180deg, #fff4bd 0 8%, currentColor 9% 100%);
+  box-shadow:
+    -11px 17px 0 -8px rgba(237, 112, 100, 0.8),
+    11px 17px 0 -8px rgba(237, 112, 100, 0.8),
+    0 0 12px rgba(240, 155, 93, 0.48);
+}
+
+.piece-glyph[data-glyph="infectious"] {
+  inset: 9%;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle, rgba(237, 112, 100, 0.98) 0 12%, transparent 14%),
+    conic-gradient(from 30deg, transparent 0 9%, currentColor 10% 24%, transparent 25% 34%, currentColor 35% 49%, transparent 50% 59%, currentColor 60% 74%, transparent 75%),
+    radial-gradient(circle, rgba(64, 173, 119, 0.38), transparent 62%);
+  animation: glyphInfect 1200ms ease-in-out infinite;
+}
+
+.piece-glyph[data-glyph="infectious"]::before {
+  inset: 18%;
+  border: 3px solid currentColor;
+  border-top-color: rgba(237, 112, 100, 0.95);
+  border-bottom-color: rgba(237, 112, 100, 0.95);
+  border-radius: 50%;
+  box-shadow:
+    0 0 0 5px rgba(64, 173, 119, 0.14),
+    0 0 14px rgba(64, 173, 119, 0.62);
+}
+
+.piece-glyph[data-glyph="infectious"]::after {
+  inset: -12%;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 50% 2%, rgba(255, 255, 255, 0.95) 0 5%, transparent 7%),
+    radial-gradient(circle at 7% 74%, rgba(255, 255, 255, 0.9) 0 4%, transparent 6%),
+    radial-gradient(circle at 93% 74%, rgba(255, 255, 255, 0.9) 0 4%, transparent 6%),
+    linear-gradient(30deg, transparent 47%, rgba(237, 112, 100, 0.92) 48% 52%, transparent 53%),
+    linear-gradient(-30deg, transparent 47%, rgba(237, 112, 100, 0.92) 48% 52%, transparent 53%);
+  opacity: 0.9;
+}
+
+.piece-glyph[data-glyph="lottery"]::before {
+  content: "?";
+  inset: 4% 16% 20%;
+  border: 3px solid currentColor;
+  border-radius: 12px;
+  transform: rotate(12deg);
+  background:
+    radial-gradient(circle at 13% 50%, rgba(10, 13, 16, 0.72) 0 6%, transparent 7%),
+    radial-gradient(circle at 87% 50%, rgba(10, 13, 16, 0.72) 0 6%, transparent 7%),
+    linear-gradient(90deg, transparent 0 24%, rgba(255, 255, 255, 0.38) 25% 30%, transparent 31%),
+    rgba(180, 139, 255, 0.08);
+  color: #fff4bd;
+  display: grid;
+  place-items: center;
+  font-size: 23px;
+  font-weight: 950;
+  line-height: 1;
+  text-shadow: 0 0 8px rgba(180, 139, 255, 0.78);
+}
+
+.piece-glyph[data-glyph="lottery"]::after {
+  inset: auto 12% 0 auto;
+  width: 36%;
+  height: 36%;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle, #fff4bd 0 19%, transparent 21%),
+    conic-gradient(from 0deg, transparent 0 10%, currentColor 11% 22%, transparent 23% 50%, currentColor 51% 62%, transparent 63%);
+  transform: rotate(20deg);
+}
+
+.piece-glyph[data-glyph="mirror"] {
+  inset: 10% 16%;
+  border-radius: 12px;
+  border: 3px solid currentColor;
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.72) 0 16%, transparent 17% 44%, rgba(255, 255, 255, 0.36) 45% 55%, transparent 56%),
+    rgba(180, 139, 255, 0.1);
+  box-shadow:
+    inset 0 0 12px rgba(255, 255, 255, 0.16),
+    0 0 12px rgba(180, 139, 255, 0.48);
+}
+
+.piece-glyph[data-glyph="mirror"]::before {
+  inset: 13% 50% 13% 13%;
+  border-radius: 8px 0 0 8px;
+  background: currentColor;
+  opacity: 0.9;
+}
+
+.piece-glyph[data-glyph="mirror"]::after {
+  inset: 13% 13% 13% 50%;
+  border-radius: 0 8px 8px 0;
+  border-left: 2px solid rgba(255, 255, 255, 0.76);
+  background: rgba(255, 255, 255, 0.18);
+}
+
+.piece-glyph[data-glyph="laser"] {
+  inset: 8%;
+}
+
+.piece-glyph[data-glyph="laser"]::before {
+  inset: 42% -8%;
+  height: 16%;
+  border-radius: 99px;
+  background: currentColor;
+  box-shadow:
+    0 0 12px rgba(113, 219, 230, 0.84),
+    0 -15px 0 -6px rgba(255, 255, 255, 0.72),
+    0 15px 0 -6px rgba(255, 255, 255, 0.72);
+  transform: rotate(-28deg);
+}
+
+.piece-glyph[data-glyph="laser"]::after {
+  inset: 28%;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle, #fff 0 18%, currentColor 19% 52%, transparent 54%);
+  box-shadow: 0 0 14px rgba(113, 219, 230, 0.72);
+}
+
+.piece-glyph[data-glyph="assassin"] {
+  inset: 9%;
+}
+
+.piece-glyph[data-glyph="assassin"]::before {
+  inset: 4% 30% 4% 30%;
+  border-radius: 99px 99px 8px 8px;
+  background:
+    linear-gradient(180deg, #fff4bd 0 12%, currentColor 13% 100%);
+  transform: rotate(38deg);
+  box-shadow: 0 0 10px rgba(237, 112, 100, 0.55);
+}
+
+.piece-glyph[data-glyph="assassin"]::after {
+  inset: 13%;
+  border: 3px solid currentColor;
+  border-radius: 50%;
+  border-top-color: transparent;
+  border-bottom-color: transparent;
+  transform: rotate(-22deg);
+}
+
+.piece-glyph[data-glyph="split"] {
+  inset: 8%;
+}
+
+.piece-glyph[data-glyph="split"]::before {
+  inset: 12%;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 30% 34%, currentColor 0 16%, transparent 18%),
+    radial-gradient(circle at 70% 34%, currentColor 0 16%, transparent 18%),
+    radial-gradient(circle at 50% 72%, currentColor 0 17%, transparent 19%);
+  filter: drop-shadow(0 0 10px rgba(64, 173, 119, 0.58));
+}
+
+.piece-glyph[data-glyph="split"]::after {
+  inset: 6%;
+  border: 2px dashed currentColor;
+  border-radius: 50%;
+  opacity: 0.86;
+}
+
+.piece-glyph[data-glyph="vampire"] {
+  inset: 7%;
+}
+
+.piece-glyph[data-glyph="vampire"]::before {
+  inset: 6% 16% 20%;
+  border-radius: 50% 50% 40% 40%;
+  background:
+    radial-gradient(circle at 36% 38%, rgba(255, 255, 255, 0.9) 0 7%, transparent 9%),
+    radial-gradient(circle at 64% 38%, rgba(255, 255, 255, 0.9) 0 7%, transparent 9%),
+    currentColor;
+  clip-path: polygon(8% 0, 92% 0, 100% 56%, 70% 100%, 58% 64%, 50% 100%, 42% 64%, 30% 100%, 0 56%);
+}
+
+.piece-glyph[data-glyph="vampire"]::after {
+  inset: auto 28% 4%;
+  height: 30%;
+  border-radius: 50% 50% 8px 8px;
+  background:
+    radial-gradient(circle at 50% 12%, #fff4bd 0 11%, transparent 13%),
+    currentColor;
+  opacity: 0.88;
+}
+
+.piece.special[data-kind="supernova"]::before {
+  inset: -14%;
+  border-width: 3px;
+  box-shadow:
+    0 0 20px rgba(var(--stone-rgb), 0.48),
+    0 0 42px rgba(var(--stone-rgb), 0.2);
+}
+
+.piece.special[data-kind="supernova"] .piece-glyph {
+  inset: 14%;
+  animation: glyphSpark 1400ms ease-in-out infinite;
+}
+
+.piece.special[data-kind="lottery"]::before {
+  border-style: dashed;
+  animation: specialStoneSpin 2600ms linear infinite;
+}
+
+.piece.special[data-kind="lottery"] .piece-glyph {
+  animation: glyphTwinkle 1500ms ease-in-out infinite;
+}
+
+.piece.special[data-kind="throne"]::before {
+  inset: -12%;
+  border-color: rgba(240, 207, 99, 0.92);
+  box-shadow:
+    0 0 0 4px rgba(240, 207, 99, 0.12),
+    0 0 22px rgba(240, 207, 99, 0.4);
+}
+
+.piece.special[data-kind="throne"] .piece-glyph {
+  inset: 17%;
+  color: #f5d86f;
+}
+
+.piece.special[data-kind="seizure"]::before {
+  inset: -10%;
+  border-radius: 18%;
+  box-shadow:
+    0 0 0 3px rgba(var(--stone-rgb), 0.12),
+    0 0 18px rgba(var(--stone-rgb), 0.34);
+}
+
+.piece.special[data-kind="seizure"] .piece-glyph {
+  inset: 17%;
+}
+
+.piece.special[data-kind="jackpot"]::before {
+  border-style: double;
+  box-shadow:
+    0 0 0 4px rgba(240, 155, 93, 0.14),
+    0 0 24px rgba(240, 155, 93, 0.42);
+}
+
+.piece.special[data-kind="jackpot"] .piece-glyph {
+  inset: 16%;
+  color: #f4bd63;
+  animation: glyphSlot 1100ms steps(3, end) infinite;
+}
+
+.piece.special[data-kind="magnet"]::before {
+  border-top-color: transparent;
+  border-bottom-color: transparent;
+  animation: specialStoneSpin 2200ms linear infinite;
+}
+
+.piece.special[data-kind="magnet"] .piece-glyph {
+  inset: 15%;
+  color: #71dbe6;
+}
+
+.piece.special[data-kind="king_bomb"]::before {
+  inset: -15%;
+  border-width: 3px;
+  border-color: rgba(237, 112, 100, 0.92);
+  box-shadow:
+    0 0 0 5px rgba(237, 112, 100, 0.12),
+    0 0 26px rgba(237, 112, 100, 0.42);
+}
+
+.piece.special[data-kind="king_bomb"] .piece-glyph {
+  inset: 11% 13%;
+  color: #ed7064;
+}
+
+.piece.special[data-kind="domino"]::before {
+  inset: -12%;
+  border-style: dashed;
+  box-shadow:
+    0 0 0 4px rgba(64, 173, 119, 0.12),
+    0 0 18px rgba(64, 173, 119, 0.36);
+}
+
+.piece.special[data-kind="domino"] .piece-glyph {
+  color: #5fd290;
+}
+
+.piece.special[data-kind="domino"] .piece-aura {
+  inset: -22%;
+  opacity: 0.55;
+}
+
+.piece.special[data-kind="infectious_bomb"]::before {
+  inset: -18%;
+  border-width: 3px;
+  border-style: solid;
+  border-color: rgba(95, 235, 142, 0.92);
+  box-shadow:
+    0 0 0 5px rgba(237, 112, 100, 0.14),
+    0 0 20px rgba(95, 235, 142, 0.52),
+    0 0 34px rgba(237, 112, 100, 0.28);
+}
+
+.piece.special[data-kind="infectious_bomb"] .piece-glyph {
+  inset: 9%;
+  color: #66ec92;
+  animation: glyphInfect 1600ms ease-in-out infinite;
+}
+
+.piece.special[data-kind="infectious_bomb"] .piece-aura {
+  opacity: 0.62;
+}
+
+.piece.special[data-kind="supernova"] .piece-aura {
+  inset: -42%;
+}
+
+.piece.special[data-kind="supernova"] .piece-aura::before {
+  background:
+    conic-gradient(from 0deg, transparent 0 5%, rgba(255, 255, 255, 0.98) 6% 10%, transparent 11% 16%, rgba(240, 207, 99, 0.95) 17% 22%, transparent 23% 30%),
+    radial-gradient(circle, rgba(255, 244, 190, 0.86) 0 13%, rgba(237, 112, 100, 0.62) 16% 28%, transparent 32%);
+  animation: stoneNovaThrob 1200ms ease-in-out infinite;
+}
+
+.piece.special[data-kind="supernova"] .piece-aura::after {
+  inset: 29%;
+  border: 0;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.92), rgba(240, 207, 99, 0.65) 36%, transparent 39%);
+  box-shadow:
+    0 0 22px rgba(240, 207, 99, 0.72),
+    0 0 40px rgba(237, 112, 100, 0.36);
+}
+
+.piece.special[data-kind="lottery"] .piece-aura::before {
+  background:
+    radial-gradient(circle at 22% 28%, rgba(255, 255, 255, 0.96) 0 5%, transparent 7%),
+    radial-gradient(circle at 72% 30%, rgba(255, 255, 255, 0.96) 0 5%, transparent 7%),
+    radial-gradient(circle at 55% 76%, rgba(255, 255, 255, 0.96) 0 5%, transparent 7%),
+    conic-gradient(from 0deg, #f0cf63, #71dbe6, #b48bff, #ed7064, #f0cf63);
+  animation: stoneLotterySpin 1300ms steps(5, end) infinite;
+}
+
+.piece.special[data-kind="lottery"] .piece-aura::after {
+  inset: 24%;
+  border: 2px dashed rgba(255, 255, 255, 0.72);
+}
+
+.piece.special[data-kind="throne"] .piece-aura {
+  inset: -34%;
+}
+
+.piece.special[data-kind="throne"] .piece-aura::before {
+  background:
+    linear-gradient(0deg, transparent 43%, rgba(255, 255, 255, 0.78) 45% 53%, transparent 55%),
+    radial-gradient(circle at 50% 18%, rgba(255, 255, 255, 0.88) 0 6%, transparent 8%),
+    repeating-conic-gradient(from 0deg, rgba(240, 207, 99, 0.9) 0 10deg, transparent 10deg 25deg);
+  animation: stoneCrownPulse 1500ms ease-in-out infinite;
+}
+
+.piece.special[data-kind="throne"] .piece-aura::after {
+  inset: 12% 22% auto;
+  height: 36%;
+  border: 0;
+  border-radius: 8px 8px 2px 2px;
+  background:
+    linear-gradient(135deg, transparent 0 22%, rgba(255, 255, 255, 0.8) 23% 34%, transparent 35% 65%, rgba(255, 255, 255, 0.8) 66% 77%, transparent 78%),
+    linear-gradient(0deg, rgba(240, 207, 99, 0.9), rgba(240, 207, 99, 0.2));
+}
+
+.piece.special[data-kind="seizure"] .piece-aura {
+  inset: -32%;
+}
+
+.piece.special[data-kind="seizure"] .piece-aura::before {
+  border-radius: 14px;
+  background:
+    linear-gradient(90deg, transparent 0 13%, rgba(255, 255, 255, 0.86) 14% 24%, transparent 25% 75%, rgba(255, 255, 255, 0.86) 76% 86%, transparent 87%),
+    linear-gradient(0deg, transparent 41%, rgba(113, 219, 230, 0.9) 44% 56%, transparent 59%);
+  animation: stoneClampSnap 1500ms ease-in-out infinite;
+}
+
+.piece.special[data-kind="seizure"] .piece-aura::after {
+  inset: 20%;
+  border-radius: 10px;
+}
+
+.piece.special[data-kind="jackpot"] .piece-aura::before {
+  background:
+    radial-gradient(circle at 18% 50%, rgba(255, 255, 255, 0.98) 0 5%, transparent 7%),
+    radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.98) 0 5%, transparent 7%),
+    radial-gradient(circle at 82% 50%, rgba(255, 255, 255, 0.98) 0 5%, transparent 7%),
+    repeating-conic-gradient(from 0deg, rgba(240, 207, 99, 0.9) 0 8deg, rgba(240, 155, 93, 0.85) 8deg 16deg, transparent 16deg 25deg);
+  animation: stoneJackpotBlink 900ms steps(4, end) infinite;
+}
+
+.piece.special[data-kind="jackpot"] .piece-aura::after {
+  inset: 22% 8%;
+  border-radius: 8px;
+  border-top: 3px solid rgba(255, 255, 255, 0.82);
+  border-bottom: 3px solid rgba(255, 255, 255, 0.82);
+}
+
+.piece.special[data-kind="magnet"] .piece-aura::before {
+  background:
+    repeating-radial-gradient(circle, transparent 0 18%, rgba(113, 219, 230, 0.7) 19% 23%, transparent 24% 31%),
+    linear-gradient(90deg, transparent 31%, rgba(255, 255, 255, 0.82) 35% 42%, transparent 46% 54%, rgba(255, 255, 255, 0.82) 58% 65%, transparent 69%);
+  animation: stoneMagnetField 1100ms ease-in-out infinite;
+}
+
+.piece.special[data-kind="magnet"] .piece-aura::after {
+  inset: 22% 31%;
+  border: 4px solid rgba(113, 219, 230, 0.9);
+  border-top: 0;
+  border-radius: 0 0 18px 18px;
+}
+
+.piece.special[data-kind="king_bomb"] .piece-aura {
+  inset: -42%;
+}
+
+.piece.special[data-kind="king_bomb"] .piece-aura::before {
+  background:
+    radial-gradient(ellipse at 50% 29%, rgba(255, 244, 190, 0.94) 0 9%, rgba(237, 112, 100, 0.9) 10% 27%, transparent 29%),
+    radial-gradient(ellipse at 50% 65%, rgba(255, 244, 190, 0.78) 0 8%, rgba(240, 155, 93, 0.7) 9% 18%, transparent 20%),
+    linear-gradient(90deg, transparent 40%, rgba(255, 244, 190, 0.84) 43% 57%, transparent 60%),
+    repeating-conic-gradient(from 0deg, rgba(237, 112, 100, 0.92) 0 7deg, transparent 7deg 19deg);
+  animation: stoneBombArm 1050ms ease-in-out infinite;
+}
+
+.piece.special[data-kind="king_bomb"] .piece-aura::after {
+  inset: 26% 22%;
+  border: 0;
+  border-radius: 50% 50% 36% 36%;
+  background:
+    radial-gradient(circle at 18% 66%, rgba(255, 244, 190, 0.82) 0 8%, transparent 10%),
+    radial-gradient(circle at 50% 40%, rgba(255, 244, 190, 0.9) 0 10%, transparent 12%),
+    radial-gradient(circle at 82% 66%, rgba(255, 244, 190, 0.82) 0 8%, transparent 10%),
+    radial-gradient(ellipse at 50% 92%, rgba(237, 112, 100, 0.72) 0 18%, transparent 20%);
+  box-shadow: 0 0 24px rgba(237, 112, 100, 0.44);
+}
+
+.piece.special[data-kind="domino"] .piece-aura::before {
+  border-radius: 10px;
+  background:
+    linear-gradient(58deg, transparent 0 28%, rgba(255, 255, 255, 0.84) 29% 35%, transparent 36% 45%, rgba(64, 173, 119, 0.86) 46% 54%, transparent 55%),
+    radial-gradient(circle at 28% 28%, rgba(255, 255, 255, 0.9) 0 5%, transparent 7%),
+    radial-gradient(circle at 72% 72%, rgba(255, 255, 255, 0.9) 0 5%, transparent 7%),
+    radial-gradient(circle, rgba(64, 173, 119, 0.54), transparent 64%);
+  animation: stoneDominoTip 1000ms ease-in-out infinite;
+}
+
+.piece.special[data-kind="domino"] .piece-aura::after {
+  inset: 25%;
+  border: 2px dashed rgba(255, 255, 255, 0.72);
+  border-radius: 8px;
+  transform: rotate(-18deg);
+}
+
+.piece.special[data-kind="infectious_bomb"] .piece-aura::before {
+  background:
+    radial-gradient(circle, rgba(237, 112, 100, 0.9) 0 10%, transparent 12%),
+    conic-gradient(from 30deg, transparent 0 8%, rgba(95, 235, 142, 0.92) 9% 23%, transparent 24% 34%, rgba(95, 235, 142, 0.92) 35% 49%, transparent 50% 60%, rgba(95, 235, 142, 0.92) 61% 75%, transparent 76%),
+    radial-gradient(circle, rgba(64, 173, 119, 0.62), transparent 64%);
+  animation: stoneInfectPulse 1000ms ease-in-out infinite;
+}
+
+.piece.special[data-kind="infectious_bomb"] .piece-aura::after {
+  inset: 12%;
+  border: 3px solid rgba(255, 255, 255, 0.82);
+  border-top-color: rgba(237, 112, 100, 0.9);
+  border-bottom-color: rgba(237, 112, 100, 0.9);
+  box-shadow:
+    0 0 0 8px rgba(64, 173, 119, 0.12),
+    inset 0 0 20px rgba(64, 173, 119, 0.24);
+}
+
+.piece.special[data-kind="mirror_stone"]::before {
+  border-style: double;
+  border-color: rgba(180, 139, 255, 0.9);
+  box-shadow:
+    0 0 0 4px rgba(180, 139, 255, 0.12),
+    0 0 22px rgba(180, 139, 255, 0.36);
+}
+
+.piece.special[data-kind="mirror_stone"] .piece-glyph {
+  color: #b48bff;
+}
+
+.piece.special[data-kind="mirror_stone"] .piece-aura::before {
+  background:
+    linear-gradient(135deg, transparent 0 38%, rgba(255, 255, 255, 0.82) 39% 45%, transparent 46%),
+    radial-gradient(circle, rgba(180, 139, 255, 0.56), transparent 64%);
+  animation: stoneAuraPulse 1500ms ease-in-out infinite;
+}
+
+.piece.special[data-kind="mirror_stone"] .piece-aura::after {
+  inset: 22%;
+  border: 2px solid rgba(255, 255, 255, 0.7);
+  border-left-color: rgba(180, 139, 255, 0.9);
+  border-right-color: rgba(180, 139, 255, 0.9);
+  border-radius: 9px;
+}
+
+.piece.special[data-kind="laser_stone"]::before {
+  border-left-color: transparent;
+  border-right-color: transparent;
+  box-shadow:
+    0 0 0 4px rgba(113, 219, 230, 0.12),
+    0 0 24px rgba(113, 219, 230, 0.42);
+}
+
+.piece.special[data-kind="laser_stone"] .piece-glyph {
+  color: #71dbe6;
+}
+
+.piece.special[data-kind="laser_stone"] .piece-aura::before {
+  background:
+    linear-gradient(27deg, transparent 0 43%, rgba(255, 255, 255, 0.92) 44% 48%, rgba(113, 219, 230, 0.9) 49% 53%, transparent 54%),
+    linear-gradient(-27deg, transparent 0 43%, rgba(113, 219, 230, 0.64) 44% 50%, transparent 51%),
+    radial-gradient(circle, rgba(113, 219, 230, 0.46), transparent 68%);
+  animation: stoneAuraPulse 1000ms ease-in-out infinite;
+}
+
+.piece.special[data-kind="laser_stone"] .piece-aura::after {
+  inset: 34%;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.86);
+  box-shadow:
+    0 0 12px rgba(113, 219, 230, 0.84),
+    0 0 24px rgba(113, 219, 230, 0.38);
+}
+
+.piece.special[data-kind="assassin_stone"]::before {
+  border-style: dotted;
+  border-color: rgba(237, 112, 100, 0.9);
+  box-shadow:
+    0 0 0 4px rgba(237, 112, 100, 0.12),
+    0 0 22px rgba(237, 112, 100, 0.38);
+}
+
+.piece.special[data-kind="assassin_stone"] .piece-glyph {
+  color: #ed7064;
+}
+
+.piece.special[data-kind="assassin_stone"] .piece-aura::before {
+  background:
+    radial-gradient(circle, transparent 0 27%, rgba(237, 112, 100, 0.8) 28% 34%, transparent 35%),
+    linear-gradient(90deg, transparent 0 45%, rgba(255, 255, 255, 0.82) 46% 54%, transparent 55%),
+    linear-gradient(0deg, transparent 0 45%, rgba(255, 255, 255, 0.82) 46% 54%, transparent 55%);
+  animation: stoneAuraPulse 1200ms ease-in-out infinite;
+}
+
+.piece.special[data-kind="split_stone"]::before {
+  border-style: dashed;
+  border-color: rgba(64, 173, 119, 0.92);
+  box-shadow:
+    0 0 0 4px rgba(64, 173, 119, 0.12),
+    0 0 22px rgba(64, 173, 119, 0.4);
+}
+
+.piece.special[data-kind="split_stone"] .piece-glyph {
+  color: #5fd290;
+}
+
+.piece.special[data-kind="split_stone"] .piece-aura::before {
+  background:
+    radial-gradient(circle at 31% 32%, rgba(255, 255, 255, 0.88) 0 6%, rgba(64, 173, 119, 0.76) 7% 15%, transparent 16%),
+    radial-gradient(circle at 69% 32%, rgba(255, 255, 255, 0.88) 0 6%, rgba(64, 173, 119, 0.76) 7% 15%, transparent 16%),
+    radial-gradient(circle at 50% 72%, rgba(255, 255, 255, 0.88) 0 6%, rgba(64, 173, 119, 0.76) 7% 15%, transparent 16%),
+    radial-gradient(circle, rgba(64, 173, 119, 0.44), transparent 66%);
+  animation: stoneAuraPulse 1300ms ease-in-out infinite;
+}
+
+.piece.special[data-kind="vampire_stone"]::before {
+  border-color: rgba(237, 112, 100, 0.9);
+  box-shadow:
+    0 0 0 4px rgba(237, 112, 100, 0.12),
+    0 0 24px rgba(237, 112, 100, 0.42);
+}
+
+.piece.special[data-kind="vampire_stone"] .piece-glyph {
+  color: #ed7064;
+}
+
+.piece.special[data-kind="vampire_stone"] .piece-aura::before {
+  background:
+    radial-gradient(circle at 50% 34%, rgba(255, 244, 190, 0.9) 0 5%, transparent 7%),
+    radial-gradient(circle, rgba(237, 112, 100, 0.72) 0 15%, transparent 17%),
+    conic-gradient(from 18deg, transparent 0 9%, rgba(237, 112, 100, 0.92) 10% 18%, transparent 19% 35%, rgba(237, 112, 100, 0.72) 36% 45%, transparent 46%);
+  animation: stoneInfectPulse 1200ms ease-in-out infinite;
+}
+
+.piece.special[data-countdown]::after {
+  content: attr(data-countdown);
+  position: absolute;
+  right: -12%;
+  bottom: -8%;
+  width: 42%;
+  height: 42%;
+  border: 1px solid rgba(240, 207, 99, 0.78);
+  border-radius: 50%;
+  background: rgba(16, 18, 18, 0.86);
+  color: var(--gold);
+  display: grid;
+  place-items: center;
+  font-size: clamp(9px, 1.8vw, 14px);
+  font-weight: 950;
+}
+
+.destiny-glyph {
+  position: absolute;
+  inset: 7%;
+  border-radius: 50%;
+  color: #b48bff;
+  border: 2px solid currentColor;
+  background:
+    radial-gradient(circle, currentColor 0 8%, transparent 10%),
+    radial-gradient(circle, transparent 0 39%, rgba(180, 139, 255, 0.24) 40% 44%, transparent 46%),
+    repeating-conic-gradient(from 0deg, currentColor 0 7deg, transparent 7deg 22deg);
+  box-shadow:
+    0 0 0 4px rgba(180, 139, 255, 0.12),
+    0 0 16px rgba(180, 139, 255, 0.62),
+    inset 0 0 18px rgba(180, 139, 255, 0.24);
+  filter: drop-shadow(0 0 8px rgba(180, 139, 255, 0.58));
+  pointer-events: none;
+  z-index: 2;
+  animation: destinySigilSpin 3600ms linear infinite;
+}
+
+.destiny-glyph::before,
+.destiny-glyph::after {
+  content: "";
+  position: absolute;
+  inset: 17%;
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.destiny-glyph::before {
+  border: 2px solid rgba(255, 255, 255, 0.76);
+  background:
+    linear-gradient(90deg, transparent 45%, rgba(255, 255, 255, 0.9) 46% 54%, transparent 55%),
+    linear-gradient(0deg, transparent 45%, rgba(255, 255, 255, 0.9) 46% 54%, transparent 55%);
+}
+
+.destiny-glyph::after {
+  inset: 34%;
+  background: currentColor;
+  clip-path: polygon(50% 0, 61% 35%, 98% 35%, 68% 56%, 79% 92%, 50% 70%, 21% 92%, 32% 56%, 2% 35%, 39% 35%);
+  box-shadow: 0 0 12px rgba(255, 255, 255, 0.7);
+  animation: destinyStarPulse 1300ms ease-in-out infinite;
+}
+
+.piece.destiny {
+  box-shadow:
+    0 0 0 4px rgba(180, 139, 255, 0.24),
+    0 0 24px rgba(180, 139, 255, 0.34),
+    inset 0 3px 6px rgba(255, 255, 255, 0.2),
+    inset 0 -5px 8px rgba(0, 0, 0, 0.32),
+    0 7px 12px rgba(0, 0, 0, 0.26);
+}
+
+.piece.special.destiny {
+  box-shadow:
+    0 0 0 4px rgba(180, 139, 255, 0.24),
+    0 0 0 7px rgba(var(--stone-rgb), 0.16),
+    0 0 26px rgba(180, 139, 255, 0.34),
+    0 0 18px rgba(var(--stone-rgb), 0.22),
+    inset 0 3px 6px rgba(255, 255, 255, 0.2),
+    inset 0 -5px 8px rgba(0, 0, 0, 0.32),
+    0 7px 12px rgba(0, 0, 0, 0.26);
+}
+
+.piece.white .destiny-glyph {
+  color: #7a4fe0;
 }
 
 .status-text {
@@ -277,6 +2116,7 @@ a {
   place-items: center;
   padding: 18px;
   pointer-events: none;
+  overflow: hidden;
   z-index: 5;
 }
 
@@ -284,7 +2124,46 @@ a {
   display: none;
 }
 
+.result-overlay::before,
+.result-overlay::after {
+  content: "";
+  position: absolute;
+  inset: -18%;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.result-overlay[data-result="won"] {
+  border-color: rgba(240, 207, 99, 0.72);
+  background:
+    radial-gradient(circle at 50% 42%, rgba(240, 207, 99, 0.18), transparent 46%),
+    rgba(4, 9, 7, 0.42);
+}
+
+.result-overlay[data-result="won"]::before {
+  background:
+    radial-gradient(circle at 20% 30%, rgba(255, 255, 255, 0.96) 0 1.4%, transparent 1.8%),
+    radial-gradient(circle at 78% 24%, rgba(240, 207, 99, 0.96) 0 1.6%, transparent 2%),
+    radial-gradient(circle at 72% 76%, rgba(113, 219, 230, 0.94) 0 1.4%, transparent 1.8%),
+    radial-gradient(circle at 28% 72%, rgba(237, 112, 100, 0.94) 0 1.4%, transparent 1.8%),
+    repeating-conic-gradient(from 0deg at 50% 50%, transparent 0 8deg, rgba(240, 207, 99, 0.58) 9deg 11deg, transparent 12deg 28deg);
+  filter: drop-shadow(0 0 18px rgba(240, 207, 99, 0.74));
+  animation: resultFanfareBurst 1600ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.result-overlay[data-result="won"]::after {
+  inset: -8%;
+  background:
+    linear-gradient(28deg, transparent 0 45%, rgba(240, 207, 99, 0.9) 46% 48%, transparent 49%),
+    linear-gradient(-28deg, transparent 0 45%, rgba(113, 219, 230, 0.72) 46% 48%, transparent 49%),
+    radial-gradient(circle at 50% 52%, rgba(255, 255, 255, 0.74) 0 4%, transparent 5%),
+    radial-gradient(circle at 50% 52%, rgba(240, 207, 99, 0.32), transparent 52%);
+  animation: resultFanfareGlow 2200ms ease-out both;
+}
+
 .result-card {
+  position: relative;
+  z-index: 1;
   min-width: min(340px, 88%);
   min-height: 132px;
   border: 1px solid rgba(240, 207, 99, 0.48);
@@ -300,6 +2179,24 @@ a {
   text-align: center;
 }
 
+.result-overlay[data-result="won"] .result-card {
+  border-color: rgba(240, 207, 99, 0.9);
+  background:
+    linear-gradient(145deg, rgba(255, 244, 190, 0.12), transparent 44%),
+    rgba(25, 31, 32, 0.82);
+  box-shadow:
+    0 0 0 1px rgba(255, 244, 190, 0.24),
+    0 0 38px rgba(240, 207, 99, 0.52),
+    0 22px 56px rgba(0, 0, 0, 0.34),
+    inset 0 1px 0 rgba(255, 255, 255, 0.16);
+  animation: resultWinCardPop 680ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.result-overlay[data-result="lost"] .result-card,
+.result-overlay[data-result="draw"] .result-card {
+  filter: saturate(0.84);
+}
+
 .result-card strong {
   color: var(--gold);
   font-size: clamp(42px, 7vw, 86px);
@@ -311,6 +2208,12 @@ a {
   color: var(--ink);
   font-size: clamp(18px, 3vw, 28px);
   font-weight: 950;
+}
+
+.result-overlay[data-result="won"] .result-card strong {
+  text-shadow:
+    0 0 14px rgba(240, 207, 99, 0.72),
+    0 0 30px rgba(240, 207, 99, 0.42);
 }
 
 .side-panel {
@@ -327,6 +2230,8 @@ a {
 .score-card,
 .control-panel,
 .identity-panel,
+.chaos-panel,
+.sound-panel,
 .save-panel,
 .online-panel,
 .rules-panel,
@@ -373,6 +2278,8 @@ a {
 }
 
 .identity-panel,
+.chaos-panel,
+.sound-panel,
 .control-panel,
 .save-panel,
 .online-panel {
@@ -382,6 +2289,7 @@ a {
 }
 
 .identity-panel div,
+.sound-toggle-row,
 .save-panel div,
 .online-panel div {
   min-height: 34px;
@@ -392,6 +2300,8 @@ a {
 }
 
 .identity-panel span,
+.sound-panel label,
+.sound-panel span,
 .save-panel span,
 .online-panel span {
   color: var(--muted);
@@ -407,6 +2317,1404 @@ a {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.sound-panel {
+  gap: 12px;
+}
+
+.sound-toggle-row label {
+  color: var(--ink);
+}
+
+.sound-toggle-row input {
+  width: 38px;
+  height: 22px;
+  accent-color: var(--gold);
+  cursor: pointer;
+}
+
+.sound-slider {
+  display: grid;
+  grid-template-columns: 58px minmax(0, 1fr);
+  align-items: center;
+  gap: 10px;
+}
+
+.sound-slider input {
+  width: 100%;
+  accent-color: var(--gold);
+  cursor: pointer;
+}
+
+.chaos-panel {
+  gap: 12px;
+}
+
+.chaos-loadouts {
+  display: grid;
+  gap: 10px;
+}
+
+.loadout-group {
+  display: grid;
+  gap: 8px;
+}
+
+.loadout-heading {
+  min-height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.loadout-heading span {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.08);
+  display: grid;
+  place-items: center;
+  color: var(--ink);
+  font-size: 13px;
+  font-weight: 950;
+}
+
+.loadout-heading strong {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.loadout-group.active .loadout-heading strong {
+  color: var(--gold);
+}
+
+.chaos-card-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.chaos-card {
+  position: relative;
+  min-height: 154px;
+  padding: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.11);
+  border-radius: 8px;
+  background:
+    linear-gradient(150deg, rgba(255, 255, 255, 0.08), transparent 46%),
+    rgba(34, 43, 49, 0.9);
+  display: grid;
+  grid-template-rows: auto 40px auto minmax(38px, 1fr) auto;
+  gap: 5px;
+  overflow: hidden;
+}
+
+.chaos-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-left: 4px solid rgba(108, 167, 255, 0.8);
+  pointer-events: none;
+}
+
+.chaos-card[data-accent="gold"]::before,
+.chaos-card[data-accent="amber"]::before {
+  border-left-color: rgba(240, 207, 99, 0.9);
+}
+
+.chaos-card[data-accent="green"]::before {
+  border-left-color: rgba(64, 173, 119, 0.9);
+}
+
+.chaos-card[data-accent="red"]::before {
+  border-left-color: rgba(237, 112, 100, 0.9);
+}
+
+.chaos-card[data-accent="violet"]::before {
+  border-left-color: rgba(180, 139, 255, 0.9);
+}
+
+.chaos-card[data-accent="cyan"]::before {
+  border-left-color: rgba(113, 219, 230, 0.9);
+}
+
+.chaos-card,
+.card-reveal {
+  --accent-rgb: 240, 207, 99;
+}
+
+.chaos-card[data-accent="amber"],
+.card-reveal[data-accent="amber"] {
+  --accent-rgb: 240, 155, 93;
+}
+
+.chaos-card[data-accent="blue"],
+.card-reveal[data-accent="blue"] {
+  --accent-rgb: 108, 167, 255;
+}
+
+.chaos-card[data-accent="green"],
+.card-reveal[data-accent="green"] {
+  --accent-rgb: 64, 173, 119;
+}
+
+.chaos-card[data-accent="red"],
+.card-reveal[data-accent="red"] {
+  --accent-rgb: 237, 112, 100;
+}
+
+.chaos-card[data-accent="violet"],
+.card-reveal[data-accent="violet"] {
+  --accent-rgb: 180, 139, 255;
+}
+
+.chaos-card[data-accent="cyan"],
+.card-reveal[data-accent="cyan"] {
+  --accent-rgb: 113, 219, 230;
+}
+
+.chaos-card.hidden-card {
+  border-color: rgba(255, 255, 255, 0.08);
+  background:
+    repeating-linear-gradient(135deg, rgba(240, 207, 99, 0.08) 0 1px, transparent 1px 9px),
+    linear-gradient(145deg, #202830, #151a1f);
+}
+
+.chaos-card.used {
+  opacity: 0.78;
+}
+
+.card-owner,
+.card-type {
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 950;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+
+.card-glyph,
+.card-back-mark {
+  position: relative;
+  width: 40px;
+  height: 40px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.07);
+  display: grid;
+  place-items: center;
+  color: rgb(var(--accent-rgb));
+  font-size: 18px;
+  font-weight: 950;
+  overflow: hidden;
+  box-shadow:
+    inset 0 0 18px rgba(var(--accent-rgb), 0.08),
+    0 0 14px rgba(var(--accent-rgb), 0.1);
+}
+
+.card-glyph::before {
+  content: "";
+  width: 54%;
+  height: 54%;
+  border: 3px solid currentColor;
+  border-radius: 50%;
+  box-shadow: inset 0 0 0 5px rgba(255, 255, 255, 0.04);
+}
+
+.chaos-card.power .card-glyph::before {
+  border-radius: 8px;
+  transform: rotate(45deg);
+}
+
+.card-glyph[data-glyph="rotate"]::before {
+  width: 58%;
+  height: 58%;
+  border-radius: 8px;
+  border-style: solid;
+  border-right-color: transparent;
+  border-bottom-color: transparent;
+  background:
+    linear-gradient(90deg, rgba(255, 255, 255, 0.22) 1px, transparent 1px) 0 0 / 33.333% 33.333%,
+    linear-gradient(180deg, rgba(255, 255, 255, 0.22) 1px, transparent 1px) 0 0 / 33.333% 33.333%;
+  transform: rotate(45deg);
+}
+
+.card-glyph[data-glyph="rotate"]::after {
+  content: "";
+  width: 24%;
+  height: 24%;
+  border-radius: 2px;
+  background: currentColor;
+  clip-path: polygon(0 0, 100% 50%, 0 100%);
+  transform: translate(15px, -13px) rotate(45deg);
+}
+
+.card-glyph[data-glyph="eclipse"]::before {
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 65% 42%, rgba(27, 34, 40, 0.95) 0 34%, transparent 36%),
+    radial-gradient(circle, currentColor 0 52%, transparent 54%);
+}
+
+.card-glyph[data-glyph="eclipse"]::after {
+  content: "";
+  width: 64%;
+  height: 64%;
+  border-radius: 8px;
+  background:
+    linear-gradient(90deg, transparent 0 30%, rgba(255, 255, 255, 0.35) 31% 34%, transparent 35% 65%, rgba(255, 255, 255, 0.35) 66% 69%, transparent 70%),
+    linear-gradient(0deg, transparent 0 30%, rgba(255, 255, 255, 0.35) 31% 34%, transparent 35% 65%, rgba(255, 255, 255, 0.35) 66% 69%, transparent 70%);
+}
+
+.card-glyph[data-glyph="black-hole"]::before {
+  border-width: 7px;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle, #020207 0 24%, transparent 26%),
+    repeating-conic-gradient(from 0deg, currentColor 0 9deg, rgba(12, 15, 30, 0.94) 9deg 17deg, transparent 17deg 28deg);
+  box-shadow:
+    inset 0 0 0 5px rgba(0, 0, 0, 0.52),
+    0 0 18px rgba(108, 167, 255, 0.36);
+}
+
+.card-glyph[data-glyph="contract"]::before {
+  width: 48%;
+  height: 56%;
+  border-radius: 3px;
+  transform: rotate(0deg);
+  border-bottom-width: 8px;
+  background:
+    linear-gradient(0deg, transparent 0 24%, rgba(255, 255, 255, 0.38) 25% 30%, transparent 31% 52%, rgba(255, 255, 255, 0.38) 53% 58%, transparent 59%);
+}
+
+.card-glyph[data-glyph="contract"]::after {
+  content: "";
+  width: 22%;
+  height: 22%;
+  border: 2px solid currentColor;
+  border-radius: 50%;
+  background: rgba(237, 112, 100, 0.56);
+  transform: translate(12px, -12px);
+}
+
+.card-glyph[data-glyph="frenzy"]::before {
+  width: 58%;
+  height: 58%;
+  border: 0;
+  border-radius: 50%;
+  background:
+    linear-gradient(28deg, transparent 38%, currentColor 39% 48%, transparent 49%),
+    linear-gradient(-26deg, transparent 38%, currentColor 39% 48%, transparent 49%),
+    radial-gradient(circle, rgba(237, 112, 100, 0.26), transparent 64%);
+}
+
+.card-glyph[data-glyph="frenzy"]::after {
+  content: "";
+  width: 42%;
+  height: 42%;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 35% 30%, rgba(255, 255, 255, 0.72) 0 12%, transparent 14%),
+    radial-gradient(circle, currentColor 0 42%, transparent 44%);
+}
+
+.card-glyph[data-glyph="double"]::before {
+  width: 62%;
+  height: 62%;
+  border-radius: 8px;
+  box-shadow: 11px 0 0 -3px currentColor;
+  transform: rotate(45deg) translateX(-4px);
+}
+
+.card-glyph[data-glyph="double"]::after {
+  content: "x2";
+  width: 58%;
+  height: 40%;
+  border-radius: 6px;
+  background: rgba(8, 10, 13, 0.72);
+  color: #fff4bd;
+  display: grid;
+  place-items: center;
+  font-size: 17px;
+  font-weight: 950;
+  line-height: 1;
+  text-shadow: 0 0 8px rgba(113, 219, 230, 0.72);
+}
+
+.card-glyph[data-glyph="auction"]::before {
+  width: 54%;
+  height: 28%;
+  border-radius: 5px;
+  border-width: 0;
+  background: currentColor;
+  transform: rotate(-28deg) translate(-1px, -5px);
+}
+
+.card-glyph[data-glyph="auction"]::after {
+  content: "";
+  width: 52%;
+  height: 8px;
+  border-radius: 99px;
+  background: currentColor;
+  box-shadow:
+    9px -16px 0 -2px currentColor,
+    -9px 13px 0 -3px rgba(255, 255, 255, 0.62);
+  transform: translateY(10px);
+}
+
+.card-glyph[data-glyph="comeback"]::before {
+  border-radius: 50%;
+  border-top-color: transparent;
+  border-right-width: 8px;
+  transform: rotate(-38deg);
+}
+
+.card-glyph[data-glyph="comeback"]::after {
+  content: "";
+  width: 28%;
+  height: 28%;
+  background: currentColor;
+  clip-path: polygon(0 0, 100% 50%, 0 100%);
+  transform: translate(13px, -10px) rotate(-38deg);
+}
+
+.card-glyph[data-glyph="ban"]::before {
+  border-radius: 50%;
+  background: linear-gradient(45deg, transparent 42%, currentColor 43% 57%, transparent 58%);
+}
+
+.card-glyph[data-glyph="ban"]::after {
+  content: "";
+  width: 32%;
+  height: 32%;
+  border: 3px solid currentColor;
+  border-top-width: 8px;
+  border-radius: 6px;
+  background: rgba(16, 22, 24, 0.72);
+}
+
+.card-glyph[data-glyph="destiny"]::before {
+  border-radius: 50%;
+  box-shadow:
+    inset 0 0 0 5px rgba(180, 139, 255, 0.16),
+    0 0 0 4px rgba(180, 139, 255, 0.1);
+}
+
+.card-glyph[data-glyph="destiny"]::after {
+  content: "";
+  width: 30%;
+  height: 30%;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.card-glyph[data-glyph="lightning-chain"]::before {
+  width: 66%;
+  height: 66%;
+  border: 0;
+  border-radius: 0;
+  background: currentColor;
+  clip-path: polygon(50% 0, 30% 39%, 50% 39%, 30% 100%, 72% 31%, 50% 31%, 70% 0);
+  filter: drop-shadow(0 0 10px rgba(113, 219, 230, 0.72));
+}
+
+.card-glyph[data-glyph="lightning-chain"]::after {
+  content: "";
+  width: 58%;
+  height: 34%;
+  border: 3px solid currentColor;
+  border-left: 0;
+  border-right: 0;
+  border-radius: 50%;
+  transform: rotate(-28deg) translateY(8px);
+  opacity: 0.78;
+}
+
+.card-glyph[data-glyph="edge-wave"]::before,
+.card-glyph[data-glyph="tidal-wave"]::before {
+  width: 70%;
+  height: 48%;
+  border: 0;
+  border-radius: 50% 50% 10px 10px;
+  background:
+    radial-gradient(circle at 72% 24%, rgba(255, 255, 255, 0.82) 0 9%, transparent 11%),
+    currentColor;
+  clip-path: polygon(0 80%, 13% 58%, 28% 73%, 43% 34%, 60% 8%, 82% 18%, 100% 0, 100% 100%, 0 100%);
+}
+
+.card-glyph[data-glyph="edge-wave"]::after,
+.card-glyph[data-glyph="tidal-wave"]::after {
+  content: "";
+  width: 68%;
+  height: 8px;
+  border-radius: 99px;
+  background: currentColor;
+  box-shadow:
+    0 12px 0 -2px rgba(255, 255, 255, 0.58),
+    0 -12px 0 -3px rgba(255, 255, 255, 0.38);
+  transform: translateY(12px);
+}
+
+.card-glyph[data-glyph="gravity"]::before {
+  width: 68%;
+  height: 68%;
+  border-width: 6px;
+  border-radius: 50%;
+  border-left-color: transparent;
+  border-right-color: transparent;
+  background:
+    radial-gradient(circle, rgba(7, 6, 14, 0.98) 0 22%, currentColor 24% 31%, transparent 33%),
+    repeating-conic-gradient(from 0deg, currentColor 0 7deg, transparent 7deg 18deg);
+  box-shadow: 0 0 18px rgba(180, 139, 255, 0.4);
+}
+
+.card-glyph[data-glyph="gravity"]::after {
+  content: "";
+  width: 22%;
+  height: 22%;
+  border-radius: 50%;
+  background: currentColor;
+  box-shadow:
+    -14px 8px 0 -5px currentColor,
+    13px -9px 0 -6px currentColor;
+}
+
+.card-glyph[data-glyph="star-core"]::before {
+  border: 0;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle, #fff4bd 0 11%, transparent 13%),
+    currentColor;
+  clip-path: polygon(
+    50% 0,
+    59% 31%,
+    86% 14%,
+    69% 41%,
+    100% 50%,
+    69% 59%,
+    86% 86%,
+    59% 69%,
+    50% 100%,
+    41% 69%,
+    14% 86%,
+    31% 59%,
+    0 50%,
+    31% 41%,
+    14% 14%,
+    41% 31%
+  );
+}
+
+.card-glyph[data-glyph="lottery"]::before {
+  content: "?";
+  border-radius: 10px;
+  transform: rotate(12deg);
+  display: grid;
+  place-items: center;
+  color: #fff4bd;
+  font-size: 21px;
+  line-height: 1;
+  background:
+    radial-gradient(circle at 12% 50%, rgba(20, 24, 30, 0.72) 0 6%, transparent 7%),
+    radial-gradient(circle at 88% 50%, rgba(20, 24, 30, 0.72) 0 6%, transparent 7%);
+}
+
+.card-glyph[data-glyph="lottery"]::after {
+  content: "";
+  width: 26%;
+  height: 26%;
+  background:
+    linear-gradient(90deg, transparent 38%, currentColor 38% 62%, transparent 62%),
+    linear-gradient(0deg, transparent 38%, currentColor 38% 62%, transparent 62%);
+  transform: rotate(45deg);
+}
+
+.card-glyph[data-glyph="throne"]::before {
+  border: 0;
+  border-radius: 4px;
+  background: currentColor;
+  clip-path: polygon(0 92%, 0 38%, 22% 64%, 36% 10%, 50% 58%, 64% 10%, 78% 64%, 100% 38%, 100% 92%);
+}
+
+.card-glyph[data-glyph="throne"]::after {
+  content: "";
+  width: 44%;
+  height: 9px;
+  border-radius: 3px;
+  background: currentColor;
+  box-shadow:
+    -10px -18px 0 -7px #fff4bd,
+    0 -22px 0 -7px #fff4bd,
+    10px -18px 0 -7px #fff4bd;
+}
+
+.card-glyph[data-glyph="clamp"]::before {
+  width: 46%;
+  height: 46%;
+  border-bottom: 0;
+  border-radius: 16px 16px 0 0;
+}
+
+.card-glyph[data-glyph="clamp"]::after {
+  content: "";
+  width: 58%;
+  height: 36%;
+  border-radius: 5px;
+  background:
+    radial-gradient(circle at 50% 37%, rgba(8, 10, 13, 0.82) 0 8%, transparent 9%),
+    linear-gradient(90deg, transparent 45%, rgba(8, 10, 13, 0.76) 46% 54%, transparent 55%),
+    currentColor;
+}
+
+.card-glyph[data-glyph="jackpot"]::before {
+  content: "777";
+  border-left: 0;
+  border-right: 0;
+  border-radius: 4px;
+  display: grid;
+  place-items: center;
+  color: #fff4bd;
+  font-size: 12px;
+  line-height: 1;
+  background: rgba(10, 13, 16, 0.54);
+}
+
+.card-glyph[data-glyph="jackpot"]::after {
+  content: "";
+  width: 22%;
+  height: 22%;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle, currentColor 0 25%, transparent 27%);
+  transform: translate(11px, 12px);
+}
+
+.card-glyph[data-glyph="magnet"]::before {
+  width: 46%;
+  height: 54%;
+  border-top: 0;
+  border-width: 6px;
+  border-radius: 0 0 18px 18px;
+}
+
+.card-glyph[data-glyph="magnet"]::after {
+  content: "";
+  width: 48%;
+  height: 8px;
+  border-radius: 3px;
+  background: linear-gradient(90deg, #ed7064 0 30%, transparent 31% 69%, #6ca7ff 70% 100%);
+  transform: translateY(-12px);
+}
+
+.card-glyph[data-glyph="mushroom-cloud"]::before {
+  width: 66%;
+  height: 46%;
+  border: 0;
+  border-radius: 50% 50% 35% 35%;
+  background:
+    radial-gradient(circle at 20% 72%, currentColor 0 18%, transparent 19%),
+    radial-gradient(circle at 40% 46%, #fff4bd 0 12%, currentColor 13% 27%, transparent 28%),
+    radial-gradient(circle at 60% 46%, #fff4bd 0 12%, currentColor 13% 27%, transparent 28%),
+    radial-gradient(circle at 80% 72%, currentColor 0 18%, transparent 19%),
+    linear-gradient(0deg, currentColor, currentColor);
+  clip-path: polygon(4% 100%, 0 66%, 17% 40%, 35% 30%, 44% 6%, 57% 8%, 68% 30%, 86% 40%, 100% 66%, 96% 100%);
+}
+
+.card-glyph[data-glyph="mushroom-cloud"]::after {
+  content: "";
+  width: 24%;
+  height: 42%;
+  border-radius: 50% 50% 8px 8px;
+  background:
+    radial-gradient(ellipse at 50% 18%, #fff4bd 0 18%, transparent 20%),
+    linear-gradient(180deg, #fff4bd 0 10%, currentColor 11% 100%);
+  transform: translateY(10px);
+}
+
+.card-glyph[data-glyph="domino"]::before {
+  width: 32%;
+  height: 54%;
+  border-radius: 7px;
+  transform: rotate(-18deg);
+  box-shadow:
+    -10px 7px 0 -3px currentColor,
+    10px -7px 0 -3px currentColor;
+}
+
+.card-glyph[data-glyph="domino"]::after {
+  content: "";
+  width: 54%;
+  height: 54%;
+  background:
+    radial-gradient(circle at 35% 24%, currentColor 0 8%, transparent 10%),
+    radial-gradient(circle at 65% 76%, currentColor 0 8%, transparent 10%),
+    linear-gradient(0deg, transparent 47%, currentColor 48% 52%, transparent 53%);
+  transform: rotate(-18deg);
+}
+
+.card-glyph[data-glyph="infectious"]::before {
+  border: 0;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle, rgba(237, 112, 100, 0.95) 0 12%, transparent 14%),
+    conic-gradient(from 30deg, transparent 0 9%, currentColor 10% 24%, transparent 25% 34%, currentColor 35% 49%, transparent 50% 59%, currentColor 60% 74%, transparent 75%),
+    radial-gradient(circle, rgba(64, 173, 119, 0.34), transparent 62%);
+  box-shadow: 0 0 16px rgba(64, 173, 119, 0.32);
+}
+
+.card-glyph[data-glyph="infectious"]::after {
+  content: "";
+  width: 40%;
+  height: 40%;
+  border: 2px solid currentColor;
+  border-top-color: rgba(237, 112, 100, 0.95);
+  border-bottom-color: rgba(237, 112, 100, 0.95);
+  border-radius: 50%;
+}
+
+.chaos-card strong {
+  color: var(--ink);
+  font-size: 15px;
+  line-height: 1.15;
+  word-break: keep-all;
+}
+
+.chaos-card p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.35;
+  word-break: keep-all;
+}
+
+.chaos-card .card-result {
+  padding: 7px 8px;
+  border: 1px solid rgba(240, 207, 99, 0.24);
+  border-radius: 7px;
+  background: rgba(240, 207, 99, 0.08);
+  color: #f1d679;
+  font-size: 11px;
+}
+
+.card-action {
+  min-height: 32px;
+  border: 1px solid rgba(240, 207, 99, 0.42);
+  border-radius: 8px;
+  background: rgba(240, 207, 99, 0.14);
+  color: var(--gold);
+  font-size: 12px;
+  font-weight: 950;
+  cursor: pointer;
+}
+
+.card-action.armed {
+  background: var(--gold);
+  color: #15110a;
+}
+
+.card-action:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.card-reveal {
+  position: absolute;
+  inset: clamp(10px, 2.4vw, 18px);
+  display: grid;
+  place-items: center;
+  pointer-events: none;
+  z-index: 6;
+}
+
+.card-reveal[hidden] {
+  display: none;
+}
+
+.card-reveal__card {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  width: min(430px, 90%);
+  min-height: 292px;
+  padding: 22px;
+  border: 1px solid rgba(var(--accent-rgb), 0.56);
+  border-radius: 8px;
+  background:
+    radial-gradient(circle at 50% 8%, rgba(var(--accent-rgb), 0.28), transparent 34%),
+    linear-gradient(145deg, rgba(var(--accent-rgb), 0.16), transparent 44%),
+    rgba(16, 22, 24, 0.92);
+  box-shadow:
+    0 24px 56px rgba(0, 0, 0, 0.42),
+    0 0 42px rgba(var(--accent-rgb), 0.22),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  display: grid;
+  align-content: center;
+  justify-items: center;
+  gap: 12px;
+  text-align: center;
+  animation: revealCardIn 520ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.card-reveal__card::before {
+  content: "";
+  position: absolute;
+  inset: -34% -18% auto;
+  height: 72%;
+  border-radius: 50%;
+  background:
+    repeating-conic-gradient(from 0deg, rgba(var(--accent-rgb), 0.18) 0 8deg, transparent 8deg 18deg),
+    radial-gradient(circle, rgba(var(--accent-rgb), 0.2), transparent 68%);
+  filter: blur(0.2px);
+  opacity: 0.9;
+  z-index: -1;
+  animation: revealAuraSpin 4200ms linear infinite;
+}
+
+.card-reveal__card::after {
+  content: "";
+  position: absolute;
+  inset: -18%;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle, rgba(255, 255, 255, 0.34) 0 7%, rgba(var(--accent-rgb), 0.28) 9% 31%, transparent 35%),
+    repeating-conic-gradient(from 0deg, rgba(var(--accent-rgb), 0.22) 0 7deg, transparent 7deg 17deg);
+  opacity: 0;
+  z-index: -1;
+  animation: revealImpactFlash 900ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.card-reveal__card span:not(.card-reveal__glyph) {
+  color: rgb(var(--accent-rgb));
+  font-size: 13px;
+  font-weight: 950;
+}
+
+.card-reveal__glyph {
+  position: relative;
+  width: 136px;
+  height: 136px;
+  border: 2px solid rgba(var(--accent-rgb), 0.58);
+  border-radius: 30px;
+  background:
+    radial-gradient(circle at 38% 26%, rgba(255, 255, 255, 0.18), transparent 32%),
+    radial-gradient(circle, rgba(var(--accent-rgb), 0.22), rgba(var(--accent-rgb), 0.06) 56%, transparent 70%),
+    rgba(255, 255, 255, 0.045);
+  color: rgb(var(--accent-rgb));
+  box-shadow:
+    inset 0 0 28px rgba(var(--accent-rgb), 0.16),
+    0 0 34px rgba(var(--accent-rgb), 0.36),
+    0 0 68px rgba(var(--accent-rgb), 0.18);
+  pointer-events: none;
+  animation: revealGlyphPop 760ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.card-reveal__glyph::before,
+.card-reveal__glyph::after {
+  content: "";
+  position: absolute;
+  pointer-events: none;
+}
+
+.card-reveal__glyph::before {
+  inset: 24%;
+  border: 6px solid currentColor;
+  border-radius: 50%;
+  box-shadow: inset 0 0 0 8px rgba(255, 255, 255, 0.04);
+}
+
+.card-reveal__glyph::after {
+  inset: 42%;
+  border-radius: 50%;
+  background: currentColor;
+  box-shadow: 0 0 18px rgba(var(--accent-rgb), 0.64);
+}
+
+.card-reveal__glyph[data-glyph="rotate"]::before {
+  inset: 20%;
+  border-radius: 12px;
+  border-style: solid;
+  border-right-color: transparent;
+  border-bottom-color: transparent;
+  background:
+    linear-gradient(90deg, rgba(255, 255, 255, 0.22) 1px, transparent 1px) 0 0 / 33.333% 33.333%,
+    linear-gradient(180deg, rgba(255, 255, 255, 0.22) 1px, transparent 1px) 0 0 / 33.333% 33.333%;
+  transform: rotate(45deg);
+  animation: revealGlyphSpin 2400ms linear infinite;
+}
+
+.card-reveal__glyph[data-glyph="rotate"]::after {
+  inset: 25% 18% auto auto;
+  width: 22%;
+  height: 22%;
+  border-radius: 2px;
+  background: currentColor;
+  clip-path: polygon(0 0, 100% 50%, 0 100%);
+  transform: rotate(45deg);
+}
+
+.card-reveal__glyph[data-glyph="eclipse"]::before {
+  inset: 15%;
+  border: 0;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 66% 42%, rgba(8, 10, 16, 0.96) 0 32%, transparent 34%),
+    radial-gradient(circle, currentColor 0 52%, transparent 54%);
+  box-shadow: 0 0 26px rgba(var(--accent-rgb), 0.48);
+}
+
+.card-reveal__glyph[data-glyph="eclipse"]::after {
+  inset: 9%;
+  border: 2px solid rgba(255, 255, 255, 0.38);
+  background: transparent;
+  animation: revealGlyphSpin 2200ms linear infinite reverse;
+}
+
+.card-reveal__glyph[data-glyph="black-hole"] {
+  border-radius: 50%;
+}
+
+.card-reveal[data-effect="double_cast"] .card-reveal__glyph {
+  box-shadow:
+    inset 0 0 32px rgba(var(--accent-rgb), 0.2),
+    0 0 36px rgba(var(--accent-rgb), 0.5),
+    0 0 82px rgba(var(--accent-rgb), 0.28);
+}
+
+.card-reveal[data-effect="double_cast"] .card-reveal__glyph::after {
+  border-color: rgba(255, 255, 255, 0.82);
+  box-shadow:
+    0 0 0 8px rgba(var(--accent-rgb), 0.14),
+    0 0 26px rgba(var(--accent-rgb), 0.62);
+  animation: revealChargePulse 900ms ease-in-out infinite;
+}
+
+.card-reveal[data-effect="ownership_frenzy"] .card-reveal__glyph::after {
+  inset: 4%;
+  border: 0;
+  border-radius: 50%;
+  background:
+    linear-gradient(28deg, transparent 38%, rgba(255, 255, 255, 0.84) 40% 48%, transparent 50%),
+    linear-gradient(-28deg, transparent 38%, rgba(237, 112, 100, 0.92) 40% 48%, transparent 50%),
+    repeating-conic-gradient(from 0deg, rgba(237, 112, 100, 0.44) 0 8deg, transparent 8deg 18deg);
+  animation: revealClawFlash 900ms ease-in-out infinite;
+}
+
+.card-reveal[data-effect="move_ban"] .card-reveal__glyph::after {
+  box-shadow:
+    inset 0 0 0 5px rgba(16, 22, 24, 0.72),
+    0 0 0 8px rgba(237, 112, 100, 0.14),
+    0 0 24px rgba(237, 112, 100, 0.44);
+}
+
+.card-reveal[data-effect="comeback_swing"] .card-reveal__glyph::after {
+  animation: revealComebackArrow 1000ms cubic-bezier(0.16, 1, 0.3, 1) infinite;
+}
+
+.card-reveal[data-effect="corner_contract"] .card-reveal__glyph::after {
+  box-shadow:
+    0 0 0 7px rgba(237, 112, 100, 0.18),
+    0 0 22px rgba(240, 207, 99, 0.52);
+}
+
+.card-reveal__glyph[data-glyph="black-hole"]::before {
+  inset: 8%;
+  border: 0;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle, #020207 0 23%, rgba(4, 5, 12, 0.96) 25% 34%, transparent 36%),
+    repeating-conic-gradient(from 0deg, rgba(var(--accent-rgb), 0.96) 0 10deg, rgba(11, 15, 30, 0.98) 10deg 18deg, transparent 18deg 28deg);
+  box-shadow:
+    inset 0 0 18px rgba(0, 0, 0, 0.9),
+    0 0 42px rgba(var(--accent-rgb), 0.46);
+  animation: revealBlackHole 2800ms linear infinite;
+}
+
+.card-reveal__glyph[data-glyph="black-hole"]::after {
+  inset: 38%;
+  background: #020207;
+  box-shadow:
+    0 0 0 11px rgba(0, 0, 0, 0.56),
+    0 0 28px rgba(var(--accent-rgb), 0.82);
+}
+
+.card-reveal__glyph[data-glyph="contract"]::before {
+  inset: 18% 27% 22%;
+  border-radius: 4px;
+  border-bottom-width: 16px;
+  background:
+    linear-gradient(0deg, transparent 0 24%, rgba(255, 255, 255, 0.38) 25% 30%, transparent 31% 52%, rgba(255, 255, 255, 0.38) 53% 58%, transparent 59%);
+}
+
+.card-reveal__glyph[data-glyph="contract"]::after {
+  inset: 15% 25% auto auto;
+  width: 19%;
+  height: 19%;
+  border: 3px solid currentColor;
+  border-radius: 50%;
+  background: rgba(237, 112, 100, 0.56);
+}
+
+.card-reveal__glyph[data-glyph="frenzy"]::before {
+  inset: 16%;
+  border: 0;
+  border-radius: 50%;
+  background:
+    linear-gradient(28deg, transparent 38%, currentColor 39% 48%, transparent 49%),
+    linear-gradient(-26deg, transparent 38%, currentColor 39% 48%, transparent 49%),
+    radial-gradient(circle, rgba(var(--accent-rgb), 0.34), transparent 64%);
+}
+
+.card-reveal__glyph[data-glyph="frenzy"]::after {
+  inset: 32%;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 35% 30%, rgba(255, 255, 255, 0.72) 0 12%, transparent 14%),
+    radial-gradient(circle, currentColor 0 42%, transparent 44%);
+}
+
+.card-reveal__glyph[data-glyph="double"]::before {
+  inset: 20% 33% 20% 17%;
+  border-radius: 12px;
+  transform: rotate(45deg);
+  box-shadow: 30px -30px 0 -6px currentColor;
+}
+
+.card-reveal__glyph[data-glyph="double"]::after {
+  content: "x2";
+  inset: auto 18% 18% auto;
+  width: 34%;
+  height: 24%;
+  border: 2px solid rgba(255, 255, 255, 0.5);
+  border-radius: 10px;
+  background: rgba(8, 10, 13, 0.72);
+  color: #fff4bd;
+  display: grid;
+  place-items: center;
+  font-size: 26px;
+  line-height: 1;
+}
+
+.card-reveal__glyph[data-glyph="auction"]::before {
+  inset: 28% 22% 46%;
+  border: 0;
+  border-radius: 8px;
+  background: currentColor;
+  transform: rotate(-28deg);
+}
+
+.card-reveal__glyph[data-glyph="auction"]::after {
+  inset: auto 21% 23%;
+  height: 10px;
+  border-radius: 99px;
+  background: currentColor;
+  box-shadow: 22px -34px 0 -4px currentColor;
+}
+
+.card-reveal__glyph[data-glyph="comeback"]::before {
+  inset: 18%;
+  border-radius: 50%;
+  border-top-color: transparent;
+  border-right-width: 14px;
+  transform: rotate(-26deg);
+}
+
+.card-reveal__glyph[data-glyph="comeback"]::after {
+  inset: 16% 10% auto auto;
+  width: 24%;
+  height: 24%;
+  border-radius: 2px;
+  background: currentColor;
+  clip-path: polygon(0 0, 100% 50%, 0 100%);
+}
+
+.card-reveal__glyph[data-glyph="ban"]::before {
+  inset: 17%;
+  border-radius: 50%;
+  background: linear-gradient(45deg, transparent 42%, currentColor 43% 57%, transparent 58%);
+}
+
+.card-reveal__glyph[data-glyph="ban"]::after {
+  inset: 30%;
+  border-radius: 8px;
+  border: 4px solid currentColor;
+  border-top-width: 10px;
+  background: rgba(16, 22, 24, 0.72);
+}
+
+.card-reveal__glyph[data-glyph="destiny"]::before {
+  inset: 13%;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle, currentColor 0 7%, transparent 9%),
+    repeating-conic-gradient(from 0deg, currentColor 0 7deg, transparent 7deg 23deg);
+  animation: revealGlyphSpin 2600ms linear infinite;
+}
+
+.card-reveal__glyph[data-glyph="destiny"]::after {
+  inset: 36%;
+  border-radius: 0;
+  background: currentColor;
+  clip-path: polygon(50% 0, 61% 35%, 98% 35%, 68% 56%, 79% 92%, 50% 70%, 21% 92%, 32% 56%, 2% 35%, 39% 35%);
+}
+
+.card-reveal__glyph[data-glyph="star-core"]::before {
+  inset: 12%;
+  border: 0;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle, #fff4bd 0 10%, transparent 12%),
+    currentColor;
+  clip-path: polygon(
+    50% 0,
+    59% 31%,
+    86% 14%,
+    69% 41%,
+    100% 50%,
+    69% 59%,
+    86% 86%,
+    59% 69%,
+    50% 100%,
+    41% 69%,
+    14% 86%,
+    31% 59%,
+    0 50%,
+    31% 41%,
+    14% 14%,
+    41% 31%
+  );
+  filter: drop-shadow(0 0 20px rgba(var(--accent-rgb), 0.62));
+  animation: revealStarPulse 1200ms ease-in-out infinite;
+}
+
+.card-reveal__glyph[data-glyph="lottery"]::before {
+  content: "?";
+  inset: 20% 24%;
+  border-radius: 16px;
+  transform: rotate(10deg);
+  display: grid;
+  place-items: center;
+  color: #fff4bd;
+  font-size: 46px;
+  line-height: 1;
+  background:
+    radial-gradient(circle at 12% 50%, rgba(20, 24, 30, 0.72) 0 6%, transparent 7%),
+    radial-gradient(circle at 88% 50%, rgba(20, 24, 30, 0.72) 0 6%, transparent 7%);
+}
+
+.card-reveal__glyph[data-glyph="lottery"]::after {
+  inset: 33%;
+  border-radius: 2px;
+  background:
+    linear-gradient(90deg, transparent 38%, currentColor 38% 62%, transparent 62%),
+    linear-gradient(0deg, transparent 38%, currentColor 38% 62%, transparent 62%);
+  transform: rotate(45deg);
+  animation: glyphTwinkle 1100ms ease-in-out infinite;
+}
+
+.card-reveal__glyph[data-glyph="throne"]::before {
+  inset: 14% 12% 38%;
+  border: 0;
+  border-radius: 8px;
+  background: currentColor;
+  clip-path: polygon(0 92%, 0 38%, 22% 64%, 36% 10%, 50% 58%, 64% 10%, 78% 64%, 100% 38%, 100% 92%);
+}
+
+.card-reveal__glyph[data-glyph="throne"]::after {
+  inset: auto 20% 22%;
+  height: 20px;
+  border-radius: 5px;
+  background:
+    radial-gradient(circle at 18% -70%, #fff4bd 0 30%, transparent 31%),
+    radial-gradient(circle at 50% -90%, #fff4bd 0 34%, transparent 35%),
+    radial-gradient(circle at 82% -70%, #fff4bd 0 30%, transparent 31%),
+    currentColor;
+}
+
+.card-reveal__glyph[data-glyph="clamp"]::before {
+  inset: 12% 28% 48%;
+  border-width: 12px;
+  border-bottom: 0;
+  border-radius: 34px 34px 0 0;
+}
+
+.card-reveal__glyph[data-glyph="clamp"]::after {
+  inset: 42% 20% 18%;
+  border-radius: 10px;
+  background:
+    radial-gradient(circle at 50% 36%, rgba(8, 10, 13, 0.86) 0 8%, transparent 9%),
+    linear-gradient(90deg, transparent 45%, rgba(8, 10, 13, 0.78) 46% 54%, transparent 55%),
+    currentColor;
+}
+
+.card-reveal__glyph[data-glyph="jackpot"]::before {
+  content: "777";
+  inset: 25% 10%;
+  border-top-width: 8px;
+  border-bottom-width: 8px;
+  border-left: 0;
+  border-right: 0;
+  border-radius: 8px;
+  display: grid;
+  place-items: center;
+  color: #fff4bd;
+  font-size: 32px;
+  line-height: 1;
+  background: rgba(10, 13, 16, 0.58);
+}
+
+.card-reveal__glyph[data-glyph="jackpot"]::after {
+  inset: auto 13% 14% auto;
+  width: 22%;
+  height: 22%;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle, currentColor 0 24%, transparent 26%),
+    radial-gradient(circle, rgba(255, 255, 255, 0.34), transparent 62%);
+  animation: glyphSlot 900ms steps(3, end) infinite;
+}
+
+.card-reveal__glyph[data-glyph="magnet"]::before {
+  inset: 18% 24% 22%;
+  border-top: 0;
+  border-width: 11px;
+  border-radius: 0 0 34px 34px;
+}
+
+.card-reveal__glyph[data-glyph="magnet"]::after {
+  inset: 14% 18% auto;
+  height: 14px;
+  border: 0;
+  border-radius: 4px;
+  background: linear-gradient(90deg, #ed7064 0 28%, transparent 29% 71%, #6ca7ff 72% 100%);
+}
+
+.card-reveal__glyph[data-glyph="mushroom-cloud"]::before {
+  inset: 12% 12% 44%;
+  border: 0;
+  border-radius: 50% 50% 36% 36%;
+  background:
+    radial-gradient(circle at 19% 72%, currentColor 0 18%, transparent 19%),
+    radial-gradient(circle at 40% 46%, #fff4bd 0 12%, currentColor 13% 27%, transparent 28%),
+    radial-gradient(circle at 60% 46%, #fff4bd 0 12%, currentColor 13% 27%, transparent 28%),
+    radial-gradient(circle at 81% 72%, currentColor 0 18%, transparent 19%),
+    linear-gradient(0deg, currentColor, currentColor);
+  clip-path: polygon(4% 100%, 0 66%, 17% 40%, 35% 30%, 44% 6%, 57% 8%, 68% 30%, 86% 40%, 100% 66%, 96% 100%);
+  filter: drop-shadow(0 0 20px rgba(var(--accent-rgb), 0.68));
+}
+
+.card-reveal__glyph[data-glyph="mushroom-cloud"]::after {
+  inset: 44% 36% 12%;
+  border-radius: 50% 50% 18px 18px;
+  border: 0;
+  background:
+    radial-gradient(ellipse at 50% 18%, #fff4bd 0 18%, transparent 20%),
+    linear-gradient(90deg, transparent 0 13%, rgba(255, 244, 190, 0.5) 14% 28%, transparent 29% 71%, rgba(255, 244, 190, 0.42) 72% 86%, transparent 87%),
+    linear-gradient(180deg, #fff4bd 0 10%, currentColor 11% 100%);
+  box-shadow:
+    -20px 20px 0 -14px rgba(237, 112, 100, 0.82),
+    20px 20px 0 -14px rgba(237, 112, 100, 0.82);
+}
+
+.card-reveal__glyph[data-glyph="domino"]::before {
+  inset: 20% 36% 20% 26%;
+  border-radius: 12px;
+  transform: rotate(-18deg);
+  box-shadow:
+    -28px 20px 0 -10px currentColor,
+    28px -20px 0 -10px currentColor;
+  animation: revealDominoCascade 1100ms ease-in-out infinite;
+}
+
+.card-reveal__glyph[data-glyph="domino"]::after {
+  inset: 30%;
+  background:
+    radial-gradient(circle at 35% 25%, currentColor 0 7%, transparent 9%),
+    radial-gradient(circle at 65% 75%, currentColor 0 7%, transparent 9%),
+    linear-gradient(0deg, transparent 47%, currentColor 48% 52%, transparent 53%);
+  transform: rotate(-18deg);
+}
+
+.card-reveal__glyph[data-glyph="lightning-chain"]::before {
+  inset: 10% 28% 10% 24%;
+  border: 0;
+  border-radius: 0;
+  background: currentColor;
+  clip-path: polygon(58% 0, 18% 44%, 44% 44%, 30% 100%, 84% 35%, 55% 35%);
+  filter: drop-shadow(0 0 18px rgba(113, 219, 230, 0.86));
+}
+
+.card-reveal__glyph[data-glyph="lightning-chain"]::after {
+  inset: 20%;
+  border: 4px dashed currentColor;
+  border-radius: 50%;
+  animation: effectSlowSpin 2800ms linear infinite;
+}
+
+.card-reveal__glyph[data-glyph="edge-wave"]::before,
+.card-reveal__glyph[data-glyph="tidal-wave"]::before {
+  inset: 18% 10% 22%;
+  border: 0;
+  border-radius: 50% 50% 18px 18px;
+  background:
+    radial-gradient(circle at 23% 66%, rgba(255, 255, 255, 0.94) 0 9%, transparent 11%),
+    radial-gradient(circle at 50% 55%, rgba(255, 255, 255, 0.94) 0 10%, transparent 12%),
+    radial-gradient(circle at 77% 66%, rgba(255, 255, 255, 0.94) 0 9%, transparent 11%),
+    currentColor;
+  clip-path: polygon(0 74%, 13% 44%, 30% 61%, 47% 35%, 64% 62%, 82% 42%, 100% 72%, 100% 100%, 0 100%);
+}
+
+.card-reveal__glyph[data-glyph="edge-wave"]::after,
+.card-reveal__glyph[data-glyph="tidal-wave"]::after {
+  inset: auto 12% 18%;
+  height: 16px;
+  border: 0;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.88);
+}
+
+.card-reveal__glyph[data-glyph="gravity"]::before {
+  inset: 12%;
+  border-radius: 50%;
+  border: 7px solid currentColor;
+  border-left-color: transparent;
+  background:
+    radial-gradient(circle, rgba(8, 10, 16, 0.96) 0 26%, transparent 28%),
+    radial-gradient(circle, rgba(180, 139, 255, 0.38), transparent 64%);
+  animation: effectSlowSpin 3200ms linear infinite;
+}
+
+.card-reveal__glyph[data-glyph="gravity"]::after {
+  inset: 38%;
+  border-radius: 50%;
+  background: currentColor;
+  box-shadow:
+    0 -32px 0 -7px currentColor,
+    30px 13px 0 -8px currentColor,
+    -30px 13px 0 -8px currentColor;
+}
+
+.card-reveal__glyph[data-glyph="mirror"]::before {
+  inset: 14% 24%;
+  border-radius: 16px;
+  border: 6px solid currentColor;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.34), transparent 54%);
+  transform: rotate(8deg);
+}
+
+.card-reveal__glyph[data-glyph="mirror"]::after {
+  inset: 24% 36%;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.82);
+  transform: rotate(38deg);
+}
+
+.card-reveal__glyph[data-glyph="laser"]::before {
+  inset: 42% 6%;
+  height: 13px;
+  border: 0;
+  border-radius: 999px;
+  background: linear-gradient(90deg, transparent, #ffffff, currentColor, #ffffff, transparent);
+  box-shadow: 0 0 24px currentColor;
+  transform: rotate(-18deg);
+}
+
+.card-reveal__glyph[data-glyph="laser"]::after {
+  inset: 31%;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.card-reveal__glyph[data-glyph="assassin"]::before {
+  inset: 16% 42% 16% 32%;
+  border: 0;
+  border-radius: 999px 999px 4px 4px;
+  background: currentColor;
+  transform: rotate(38deg);
+}
+
+.card-reveal__glyph[data-glyph="assassin"]::after {
+  inset: 18% 24% 62% 54%;
+  border: 0;
+  background: currentColor;
+  clip-path: polygon(0 0, 100% 50%, 0 100%);
+  transform: rotate(38deg);
+}
+
+.card-reveal__glyph[data-glyph="split"]::before {
+  inset: 20%;
+  border: 0;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 50% 18%, currentColor 0 13%, transparent 15%),
+    radial-gradient(circle at 22% 72%, currentColor 0 13%, transparent 15%),
+    radial-gradient(circle at 78% 72%, currentColor 0 13%, transparent 15%);
+}
+
+.card-reveal__glyph[data-glyph="split"]::after {
+  inset: 30%;
+  border: 4px solid currentColor;
+  border-radius: 50%;
+  opacity: 0.72;
+}
+
+.card-reveal__glyph[data-glyph="vampire"]::before {
+  inset: 13% 20% 24%;
+  border: 0;
+  background: currentColor;
+  clip-path: polygon(50% 0, 92% 34%, 72% 100%, 50% 76%, 28% 100%, 8% 34%);
+}
+
+.card-reveal__glyph[data-glyph="vampire"]::after {
+  inset: auto 35% 12%;
+  height: 23%;
+  border: 0;
+  border-radius: 0 0 999px 999px;
+  background: rgba(255, 255, 255, 0.86);
+}
+
+.card-reveal__glyph[data-glyph="infectious"]::before {
+  inset: 10%;
+  border: 0;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle, rgba(237, 112, 100, 0.98) 0 11%, transparent 13%),
+    conic-gradient(from 30deg, transparent 0 9%, currentColor 10% 24%, transparent 25% 34%, currentColor 35% 49%, transparent 50% 59%, currentColor 60% 74%, transparent 75%),
+    radial-gradient(circle, rgba(64, 173, 119, 0.42), transparent 64%);
+  filter:
+    drop-shadow(0 0 20px rgba(64, 173, 119, 0.72))
+    drop-shadow(0 0 16px rgba(237, 112, 100, 0.46));
+  animation: revealInfectSpin 1600ms ease-in-out infinite;
+}
+
+.card-reveal__glyph[data-glyph="infectious"]::after {
+  inset: 22%;
+  border-radius: 50%;
+  border: 5px solid currentColor;
+  border-top-color: rgba(237, 112, 100, 0.96);
+  border-bottom-color: rgba(237, 112, 100, 0.96);
+  background:
+    radial-gradient(circle, rgba(237, 112, 100, 0.8) 0 18%, transparent 20%);
+  box-shadow:
+    0 0 0 10px rgba(64, 173, 119, 0.12),
+    inset 0 0 24px rgba(64, 173, 119, 0.22);
+  animation: revealInfectPulse 900ms ease-in-out infinite;
+}
+
+.card-reveal__card strong {
+  color: var(--ink);
+  font-size: clamp(34px, 6vw, 62px);
+  line-height: 0.92;
+  letter-spacing: 0;
+}
+
+.card-reveal__card p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.45;
+  word-break: keep-all;
 }
 
 .save-panel p {
@@ -493,6 +3801,45 @@ legend {
   font-weight: 900;
 }
 
+.field-help {
+  margin: 8px 0 0;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.4;
+  word-break: keep-all;
+}
+
+.field-help-row {
+  margin-top: 8px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: start;
+  gap: 10px;
+}
+
+.field-help-row .field-help {
+  margin: 0;
+}
+
+.inline-help-button {
+  min-height: 34px;
+  border: 1px solid rgba(240, 207, 99, 0.42);
+  border-radius: 8px;
+  background: rgba(240, 207, 99, 0.12);
+  color: var(--gold);
+  padding: 0 12px;
+  font-size: 12px;
+  font-weight: 950;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.inline-help-button:hover,
+.inline-help-button:focus-visible {
+  filter: brightness(1.08);
+  outline: none;
+}
+
 .option-grid {
   display: grid;
   gap: 8px;
@@ -532,6 +3879,17 @@ legend {
 .option-tile:has(input:checked) {
   border-color: rgba(240, 207, 99, 0.64);
   background: rgba(240, 207, 99, 0.15);
+}
+
+.option-tile:has(input:disabled) {
+  cursor: not-allowed;
+  opacity: 0.52;
+}
+
+.chaos-toggle {
+  min-height: 64px;
+  justify-items: start;
+  padding: 0 14px;
 }
 
 .lobby-panel select {
@@ -714,6 +4072,259 @@ legend {
   color: var(--ink);
 }
 
+.chaos-guide-dialog {
+  width: min(760px, calc(100vw - 24px));
+  max-height: min(760px, calc(100vh - 24px));
+  border: 1px solid rgba(240, 207, 99, 0.38);
+  border-radius: 8px;
+  background: rgba(20, 26, 30, 0.98);
+  color: var(--ink);
+  padding: 0;
+  box-shadow: 0 28px 80px rgba(0, 0, 0, 0.5);
+}
+
+.chaos-guide-dialog::backdrop {
+  background: rgba(0, 0, 0, 0.58);
+}
+
+.chaos-guide {
+  display: grid;
+  gap: 14px;
+  padding: 18px;
+}
+
+.chaos-guide-header {
+  min-height: 46px;
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.chaos-guide-header span {
+  color: var(--gold);
+  font-size: 12px;
+  font-weight: 950;
+}
+
+.chaos-guide-header h2 {
+  margin: 2px 0 0;
+  color: var(--ink);
+  font-size: 24px;
+  line-height: 1.1;
+}
+
+.dialog-close-button {
+  width: 38px;
+  height: 38px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--panel-strong);
+  color: var(--ink);
+  font-size: 24px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.dialog-close-button:hover,
+.dialog-close-button:focus-visible {
+  filter: brightness(1.08);
+  outline: none;
+}
+
+.chaos-guide-tabs {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.chaos-guide-tabs button {
+  min-height: 42px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--panel-strong);
+  color: var(--muted);
+  font-weight: 950;
+  cursor: pointer;
+}
+
+.chaos-guide-tabs button[aria-selected="true"] {
+  border-color: rgba(240, 207, 99, 0.64);
+  background: rgba(240, 207, 99, 0.15);
+  color: var(--gold);
+}
+
+.chaos-guide-list {
+  max-height: min(540px, calc(100vh - 220px));
+  overflow: auto;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  padding-right: 4px;
+}
+
+.chaos-guide-item {
+  min-height: 128px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  background:
+    linear-gradient(145deg, rgba(240, 207, 99, 0.08), transparent 42%),
+    rgba(34, 43, 49, 0.84);
+  padding: 12px;
+  display: grid;
+  align-content: start;
+  gap: 7px;
+}
+
+.chaos-guide-item.has-preview {
+  min-height: 154px;
+  grid-template-columns: 108px minmax(0, 1fr);
+  align-items: center;
+  align-content: center;
+  gap: 12px;
+}
+
+.chaos-guide-item-body {
+  min-width: 0;
+  display: grid;
+  align-content: start;
+  gap: 7px;
+}
+
+.stone-guide-preview {
+  width: 108px;
+  max-width: 100%;
+  aspect-ratio: 1 / 1;
+  justify-self: center;
+  overflow: hidden;
+  isolation: isolate;
+  border-color: rgba(240, 207, 99, 0.2);
+  background:
+    linear-gradient(90deg, rgba(5, 16, 11, 0.5) 1px, transparent 1px) 0 0 / 25% 25%,
+    linear-gradient(180deg, rgba(5, 16, 11, 0.5) 1px, transparent 1px) 0 0 / 25% 25%,
+    radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.08), transparent 58%),
+    #1f6d50;
+}
+
+.power-guide-preview {
+  --accent-rgb: 240, 207, 99;
+  width: 108px;
+  max-width: 100%;
+  aspect-ratio: 1 / 1;
+  justify-self: center;
+  overflow: hidden;
+  isolation: isolate;
+  border-color: rgba(var(--accent-rgb), 0.34);
+  background:
+    linear-gradient(90deg, rgba(5, 16, 11, 0.5) 1px, transparent 1px) 0 0 / 25% 25%,
+    linear-gradient(180deg, rgba(5, 16, 11, 0.5) 1px, transparent 1px) 0 0 / 25% 25%,
+    radial-gradient(circle at 50% 50%, rgba(var(--accent-rgb), 0.1), transparent 58%),
+    #1f6d50;
+}
+
+.power-guide-preview[data-accent="amber"] {
+  --accent-rgb: 240, 155, 93;
+}
+
+.power-guide-preview[data-accent="blue"] {
+  --accent-rgb: 108, 167, 255;
+}
+
+.power-guide-preview[data-accent="cyan"] {
+  --accent-rgb: 113, 219, 230;
+}
+
+.power-guide-preview[data-accent="gold"] {
+  --accent-rgb: 240, 207, 99;
+}
+
+.power-guide-preview[data-accent="green"] {
+  --accent-rgb: 64, 173, 119;
+}
+
+.power-guide-preview[data-accent="red"] {
+  --accent-rgb: 237, 112, 100;
+}
+
+.power-guide-preview[data-accent="violet"] {
+  --accent-rgb: 180, 139, 255;
+}
+
+.power-guide-grid {
+  position: absolute;
+  inset: 11%;
+  border-radius: 7px;
+  background:
+    radial-gradient(circle at 18% 18%, rgba(255, 255, 255, 0.42) 0 5%, transparent 6%),
+    radial-gradient(circle at 82% 18%, rgba(8, 10, 13, 0.55) 0 5%, transparent 6%),
+    radial-gradient(circle at 18% 82%, rgba(8, 10, 13, 0.55) 0 5%, transparent 6%),
+    radial-gradient(circle at 82% 82%, rgba(255, 255, 255, 0.42) 0 5%, transparent 6%);
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 255, 255, 0.08),
+    0 0 18px rgba(var(--accent-rgb), 0.18);
+  opacity: 0.82;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.power-guide-preview .effect-visual {
+  z-index: 1;
+}
+
+.power-guide-glyph {
+  width: 48px;
+  height: 48px;
+  border-color: rgba(var(--accent-rgb), 0.48);
+  background:
+    radial-gradient(circle at 50% 50%, rgba(9, 12, 15, 0.9), rgba(9, 12, 15, 0.66) 70%),
+    rgba(255, 255, 255, 0.08);
+  color: rgb(var(--accent-rgb));
+  z-index: 3;
+  box-shadow:
+    inset 0 0 18px rgba(var(--accent-rgb), 0.16),
+    0 0 18px rgba(var(--accent-rgb), 0.38);
+}
+
+.stone-guide-preview .effect-visual {
+  z-index: 0;
+}
+
+.stone-guide-preview .piece {
+  width: 62%;
+  height: 62%;
+  z-index: 2;
+}
+
+.stone-guide-preview .piece-aura {
+  opacity: 0.64;
+}
+
+.stone-guide-preview .piece-owner-mark {
+  inset: 8%;
+}
+
+.chaos-guide-item strong {
+  color: var(--ink);
+  font-size: 16px;
+  line-height: 1.2;
+}
+
+.chaos-guide-item p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.4;
+  word-break: keep-all;
+}
+
+.chaos-guide-item span {
+  color: var(--gold);
+  font-size: 12px;
+  font-weight: 850;
+  line-height: 1.35;
+  word-break: keep-all;
+}
+
 .mini-board {
   position: relative;
   width: 100%;
@@ -838,6 +4449,744 @@ legend {
   }
 }
 
+@keyframes effectCellPulse {
+  0% {
+    box-shadow: inset 0 0 0 0 rgba(var(--effect-rgb), 0);
+  }
+  35% {
+    box-shadow: inset 0 0 0 5px rgba(var(--effect-rgb), 0.78), 0 0 28px rgba(var(--effect-rgb), 0.38);
+  }
+  100% {
+    box-shadow: inset 0 0 0 0 rgba(var(--effect-rgb), 0);
+  }
+}
+
+@keyframes effectBadgeIn {
+  0% {
+    opacity: 0;
+    transform: translateY(6px) scale(0.72);
+  }
+  65% {
+    opacity: 1;
+    transform: translateY(0) scale(1.08);
+  }
+  100% {
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes effectVisualBloom {
+  0% {
+    opacity: 0;
+    transform: scale(0.45);
+  }
+  58% {
+    opacity: 1;
+    transform: scale(1.12);
+  }
+  100% {
+    opacity: 0.92;
+    transform: scale(1);
+  }
+}
+
+@keyframes effectBurst {
+  0% {
+    opacity: 0;
+    transform: scale(0.2) rotate(-24deg);
+  }
+  48% {
+    opacity: 1;
+    transform: scale(1.18) rotate(10deg);
+  }
+  100% {
+    opacity: 0.82;
+    transform: scale(1) rotate(0);
+  }
+}
+
+@keyframes effectSlowSpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes effectBlackHole {
+  to {
+    transform: rotate(360deg) scale(1.02);
+  }
+}
+
+@keyframes effectSwapSpin {
+  0% {
+    opacity: 0;
+    transform: rotate(-180deg) scale(0.55);
+  }
+  100% {
+    opacity: 0.94;
+    transform: rotate(0) scale(1);
+  }
+}
+
+@keyframes effectSupernovaPop {
+  0% {
+    opacity: 0;
+    transform: scale(0.15) rotate(-24deg);
+  }
+  42% {
+    opacity: 1;
+    transform: scale(1.38) rotate(12deg);
+  }
+  100% {
+    opacity: 0.86;
+    transform: scale(1) rotate(0);
+  }
+}
+
+@keyframes effectCrossDetonate {
+  0% {
+    opacity: 0;
+    transform: scaleX(0.18) scaleY(0.18) rotate(-9deg);
+  }
+  55% {
+    opacity: 1;
+    transform: scaleX(1.42) scaleY(1.18) rotate(0);
+  }
+  100% {
+    opacity: 0.9;
+    transform: scale(1);
+  }
+}
+
+@keyframes effectAuctionHammer {
+  0% {
+    opacity: 0;
+    transform: translateY(-18%) rotate(-32deg) scale(0.6);
+  }
+  48% {
+    opacity: 1;
+    transform: translateY(5%) rotate(9deg) scale(1.15);
+  }
+  100% {
+    opacity: 0.9;
+    transform: translateY(0) rotate(0) scale(1);
+  }
+}
+
+@keyframes effectLotteryJackpot {
+  0% {
+    opacity: 0;
+    transform: scale(0.45) rotate(-28deg);
+  }
+  100% {
+    opacity: 0.9;
+    transform: scale(1.08) rotate(18deg);
+  }
+}
+
+@keyframes effectRoyalDrop {
+  0% {
+    opacity: 0;
+    transform: translateY(-18%) scale(0.62);
+  }
+  58% {
+    opacity: 1;
+    transform: translateY(6%) scale(1.18);
+  }
+  100% {
+    opacity: 0.92;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes effectClampSnap {
+  0% {
+    opacity: 0;
+    transform: scaleX(1.8) scaleY(0.34);
+  }
+  65% {
+    opacity: 1;
+    transform: scaleX(0.82) scaleY(1.18);
+  }
+  100% {
+    opacity: 0.9;
+    transform: scale(1);
+  }
+}
+
+@keyframes effectDominoCascade {
+  0% {
+    opacity: 0;
+    transform: translateX(-18%) rotate(-24deg) scale(0.7);
+  }
+  62% {
+    opacity: 1;
+    transform: translateX(8%) rotate(12deg) scale(1.12);
+  }
+  100% {
+    opacity: 0.9;
+    transform: translateX(0) rotate(0) scale(1);
+  }
+}
+
+@keyframes effectInfectionBloom {
+  0% {
+    opacity: 0;
+    transform: scale(0.38);
+  }
+  55% {
+    opacity: 1;
+    transform: scale(1.24);
+  }
+  100% {
+    opacity: 0.9;
+    transform: scale(1);
+  }
+}
+
+@keyframes effectToxicTendrils {
+  0% {
+    opacity: 0;
+    transform: rotate(-22deg) scale(0.45);
+  }
+  58% {
+    opacity: 1;
+    transform: rotate(8deg) scale(1.2);
+  }
+  100% {
+    opacity: 0.84;
+    transform: rotate(0) scale(1);
+  }
+}
+
+@keyframes effectJackpotBurst {
+  0% {
+    opacity: 0;
+    transform: scale(0.5) rotate(-12deg);
+  }
+  100% {
+    opacity: 0.92;
+    transform: scale(1.12) rotate(8deg);
+  }
+}
+
+@keyframes effectMagnetPulse {
+  0% {
+    opacity: 0;
+    transform: scaleX(0.55) scaleY(1.4);
+  }
+  55% {
+    opacity: 1;
+    transform: scaleX(1.22) scaleY(0.88);
+  }
+  100% {
+    opacity: 0.9;
+    transform: scale(1);
+  }
+}
+
+@keyframes effectBoardFlipSpin {
+  0% {
+    opacity: 0;
+    transform: rotate(-220deg) scale(0.48);
+  }
+  100% {
+    opacity: 0.9;
+    transform: rotate(0) scale(1);
+  }
+}
+
+@keyframes effectEclipseDrop {
+  0% {
+    opacity: 0;
+    transform: translateY(-18%) scale(1.25);
+  }
+  65% {
+    opacity: 1;
+    transform: translateY(4%) scale(0.9);
+  }
+  100% {
+    opacity: 0.9;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes effectDestinySeal {
+  0% {
+    opacity: 0;
+    transform: scale(1.5) rotate(-45deg);
+  }
+  58% {
+    opacity: 1;
+    transform: scale(0.84) rotate(12deg);
+  }
+  100% {
+    opacity: 0.92;
+    transform: scale(1) rotate(0);
+  }
+}
+
+@keyframes effectFrenzyClaw {
+  0% {
+    opacity: 0;
+    transform: scale(0.44) rotate(-22deg);
+  }
+  62% {
+    opacity: 1;
+    transform: scale(1.26) rotate(8deg);
+  }
+  100% {
+    opacity: 0.9;
+    transform: scale(1) rotate(0);
+  }
+}
+
+@keyframes effectComebackWhip {
+  0% {
+    opacity: 0;
+    transform: rotate(-160deg) scale(0.58);
+  }
+  72% {
+    opacity: 1;
+    transform: rotate(18deg) scale(1.12);
+  }
+  100% {
+    opacity: 0.9;
+    transform: rotate(0) scale(1);
+  }
+}
+
+@keyframes effectBanStamp {
+  0% {
+    opacity: 0;
+    transform: translateY(-18%) scale(1.22);
+  }
+  55% {
+    opacity: 1;
+    transform: translateY(6%) scale(0.88);
+  }
+  100% {
+    opacity: 0.9;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes effectContractSeal {
+  0% {
+    opacity: 0;
+    transform: scale(0.55) rotate(-18deg);
+  }
+  58% {
+    opacity: 1;
+    transform: scale(1.16) rotate(8deg);
+  }
+  100% {
+    opacity: 0.9;
+    transform: scale(1) rotate(0);
+  }
+}
+
+@keyframes resultFanfareBurst {
+  0% {
+    opacity: 0;
+    transform: scale(0.42) rotate(-18deg);
+  }
+
+  22% {
+    opacity: 1;
+  }
+
+  72% {
+    opacity: 0.92;
+    transform: scale(1.08) rotate(10deg);
+  }
+
+  100% {
+    opacity: 0.58;
+    transform: scale(1.2) rotate(16deg);
+  }
+}
+
+@keyframes resultFanfareGlow {
+  0% {
+    opacity: 0;
+    transform: scale(0.82);
+  }
+
+  34% {
+    opacity: 0.92;
+    transform: scale(1.02);
+  }
+
+  100% {
+    opacity: 0.5;
+    transform: scale(1.08);
+  }
+}
+
+@keyframes resultWinCardPop {
+  0% {
+    transform: scale(0.86);
+  }
+
+  55% {
+    transform: scale(1.045);
+  }
+
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes specialStoneAura {
+  0%,
+  100% {
+    opacity: 0.72;
+    transform: scale(0.98);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.06);
+  }
+}
+
+@keyframes stoneAuraPulse {
+  0%,
+  100% {
+    opacity: 0.58;
+    transform: scale(0.92);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.12);
+  }
+}
+
+@keyframes stoneAuraSpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes stoneNovaThrob {
+  0%,
+  100% {
+    transform: rotate(0) scale(0.9);
+  }
+  50% {
+    transform: rotate(18deg) scale(1.18);
+  }
+}
+
+@keyframes stoneLotterySpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes stoneCrownPulse {
+  0%,
+  100% {
+    transform: translateY(0) scale(0.94);
+  }
+  50% {
+    transform: translateY(-4%) scale(1.12);
+  }
+}
+
+@keyframes stoneClampSnap {
+  0%,
+  100% {
+    transform: scaleX(1);
+  }
+  50% {
+    transform: scaleX(0.72);
+  }
+}
+
+@keyframes stoneJackpotBlink {
+  0% {
+    filter: hue-rotate(0deg);
+    transform: scale(0.94);
+  }
+  100% {
+    filter: hue-rotate(28deg);
+    transform: scale(1.08);
+  }
+}
+
+@keyframes stoneMagnetField {
+  0%,
+  100% {
+    transform: scaleX(0.88);
+  }
+  50% {
+    transform: scaleX(1.16);
+  }
+}
+
+@keyframes stoneBombArm {
+  0%,
+  100% {
+    transform: scale(0.9) rotate(0);
+  }
+  50% {
+    transform: scale(1.13) rotate(9deg);
+  }
+}
+
+@keyframes stoneDominoTip {
+  0%,
+  100% {
+    transform: translateX(0) rotate(0);
+  }
+  50% {
+    transform: translateX(5%) rotate(8deg);
+  }
+}
+
+@keyframes stoneInfectPulse {
+  0%,
+  100% {
+    transform: scale(0.9);
+  }
+  50% {
+    transform: scale(1.15);
+  }
+}
+
+@keyframes specialStoneSpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes glyphSpark {
+  0%,
+  100% {
+    transform: scale(0.96) rotate(0);
+  }
+  50% {
+    transform: scale(1.12) rotate(18deg);
+  }
+}
+
+@keyframes glyphDominoTip {
+  0%,
+  100% {
+    transform: rotate(-18deg) translateX(0);
+  }
+  50% {
+    transform: rotate(-25deg) translateX(3%);
+  }
+}
+
+@keyframes glyphTwinkle {
+  0%,
+  100% {
+    opacity: 0.82;
+    transform: rotate(45deg) scale(0.88);
+  }
+  50% {
+    opacity: 1;
+    transform: rotate(45deg) scale(1.12);
+  }
+}
+
+@keyframes glyphSlot {
+  0% {
+    transform: translateY(-1px);
+  }
+  100% {
+    transform: translateY(2px);
+  }
+}
+
+@keyframes glyphInfect {
+  0%,
+  100% {
+    filter: drop-shadow(0 0 4px rgba(64, 173, 119, 0.36));
+    transform: scale(0.96);
+  }
+  50% {
+    filter: drop-shadow(0 0 10px rgba(64, 173, 119, 0.72));
+    transform: scale(1.08);
+  }
+}
+
+@keyframes destinySigilSpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes destinyStarPulse {
+  0%,
+  100% {
+    transform: scale(0.9);
+  }
+  50% {
+    transform: scale(1.18);
+  }
+}
+
+@keyframes revealCardIn {
+  0% {
+    opacity: 0;
+    transform: translateY(10px) rotateX(18deg) scale(0.94);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) rotateX(0) scale(1);
+  }
+}
+
+@keyframes revealAuraSpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes revealImpactFlash {
+  0% {
+    opacity: 0;
+    transform: scale(0.3) rotate(-18deg);
+  }
+  34% {
+    opacity: 1;
+    transform: scale(1.12) rotate(9deg);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1.7) rotate(22deg);
+  }
+}
+
+@keyframes revealGlyphPop {
+  0% {
+    opacity: 0;
+    transform: translateY(8px) scale(0.58) rotate(-8deg);
+  }
+  72% {
+    opacity: 1;
+    transform: translateY(0) scale(1.08) rotate(2deg);
+  }
+  100% {
+    transform: translateY(0) scale(1) rotate(0);
+  }
+}
+
+@keyframes revealGlyphSpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes revealBlackHole {
+  to {
+    transform: rotate(360deg) scale(1.03);
+  }
+}
+
+@keyframes revealInfectSpin {
+  0%,
+  100% {
+    transform: rotate(-8deg) scale(0.96);
+  }
+  50% {
+    transform: rotate(18deg) scale(1.12);
+  }
+}
+
+@keyframes revealInfectPulse {
+  0%,
+  100% {
+    transform: scale(0.92);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+}
+
+@keyframes revealDominoCascade {
+  0%,
+  100% {
+    transform: rotate(-18deg) translateX(0);
+  }
+  50% {
+    transform: rotate(-27deg) translateX(5%);
+  }
+}
+
+@keyframes revealChargePulse {
+  0%,
+  100% {
+    transform: scale(0.92);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+}
+
+@keyframes revealClawFlash {
+  0%,
+  100% {
+    opacity: 0.72;
+    transform: rotate(-8deg) scale(0.96);
+  }
+  50% {
+    opacity: 1;
+    transform: rotate(8deg) scale(1.1);
+  }
+}
+
+@keyframes revealComebackArrow {
+  0%,
+  100% {
+    transform: translateY(0) scale(1);
+  }
+  50% {
+    transform: translateY(-8%) scale(1.12);
+  }
+}
+
+@keyframes revealStarPulse {
+  0%,
+  100% {
+    transform: scale(0.92) rotate(0);
+  }
+  50% {
+    transform: scale(1.1) rotate(18deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .piece.flipped,
+  .piece.placed,
+  .cell.effect-cell,
+  .effect-visual,
+  .effect-badge,
+  .piece.special::before,
+  .piece-aura,
+  .piece-aura::before,
+  .piece-aura::after,
+  .piece-glyph,
+  .destiny-glyph,
+  .destiny-glyph::after,
+  .card-reveal__card,
+  .card-reveal__card::before,
+  .card-reveal__card::after,
+  .card-reveal__glyph,
+  .card-reveal__glyph::before,
+  .card-reveal__glyph::after,
+  .result-overlay::before,
+  .result-overlay::after,
+  .result-overlay[data-result="won"] .result-card {
+    animation-duration: 1ms;
+    animation-iteration-count: 1;
+  }
+}
+
 .rules-panel {
   padding: 12px;
   display: grid;
@@ -954,6 +5303,19 @@ legend {
     font-size: 34px;
   }
 
+  .chaos-card {
+    min-height: 136px;
+    padding: 9px;
+  }
+
+  .chaos-card strong {
+    font-size: 14px;
+  }
+
+  .chaos-card p {
+    font-size: 11px;
+  }
+
   .option-grid.two,
   .option-grid.three,
   .lobby-actions {
@@ -962,5 +5324,32 @@ legend {
 
   .online-auth-row {
     grid-template-columns: 1fr;
+  }
+
+  .field-help-row {
+    grid-template-columns: 1fr;
+  }
+
+  .inline-help-button {
+    width: 100%;
+  }
+
+  .chaos-guide-list {
+    grid-template-columns: 1fr;
+  }
+
+  .chaos-guide-item.has-preview {
+    grid-template-columns: 86px minmax(0, 1fr);
+    gap: 10px;
+  }
+
+  .stone-guide-preview,
+  .power-guide-preview {
+    width: 86px;
+  }
+
+  .power-guide-glyph {
+    width: 40px;
+    height: 40px;
   }
 }
