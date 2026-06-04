@@ -3341,7 +3341,21 @@ function advanceTurn() {
     state.legalMoves = nextMoves;
     state.message = `${PLAYERS[next].label} 차례입니다.`;
     if (resolveTurnStartEffects(next)) return;
+    if (state.gameOver) return;
     state.legalMoves = getPlayableMoves(state.board, next);
+    if (state.legalMoves.length) return;
+
+    const currentMovesAfterEffects = getPlayableMoves(state.board, current);
+    if (currentMovesAfterEffects.length) {
+      state.current = current;
+      state.legalMoves = currentMovesAfterEffects;
+      state.message = `${PLAYERS[next].label}은 둘 곳이 없어 ${PLAYERS[current].label}이 계속 둡니다.`;
+      return;
+    }
+
+    state.gameOver = true;
+    state.resultSummary = buildResultSummary();
+    state.message = buildGameOverMessage();
     return;
   }
 
