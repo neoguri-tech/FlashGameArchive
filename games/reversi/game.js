@@ -316,6 +316,7 @@ const CHAOS_STONE_DEFS = {
 };
 
 const CHAOS_BANNED_LOADOUTS = new Set([
+  "black_hole+assassin_stone",
   "black_hole+domino",
   "black_hole+magnet",
   "black_hole+mirror_stone",
@@ -330,16 +331,19 @@ const CHAOS_BANNED_LOADOUTS = new Set([
   "chain_lightning+mirror_stone",
   "chain_lightning+split_stone",
   "chain_lightning+vampire_stone",
+  "comeback_swing+domino",
   "comeback_swing+magnet",
   "comeback_swing+throne",
   "comeback_swing+split_stone",
   "comeback_swing+vampire_stone",
   "destiny_move+jackpot",
   "destiny_move+king_bomb",
+  "destiny_move+split_stone",
   "destiny_move+throne",
   "destiny_move+vampire_stone",
   "eclipse_3x3+jackpot",
   "eclipse_3x3+king_bomb",
+  "eclipse_3x3+laser_stone",
   "eclipse_3x3+magnet",
   "eclipse_3x3+mirror_stone",
   "eclipse_3x3+vampire_stone",
@@ -2831,6 +2835,9 @@ function applyChaosPower(playerId, powerId, target = null) {
   }
   appendTriggeredStoneRevealDetails(playerId, takeShieldBlockEffects());
   state.legalMoves = getPlayableMoves(state.board, state.current);
+  if (!state.legalMoves.length) {
+    advanceTurn();
+  }
   render();
   return true;
 }
